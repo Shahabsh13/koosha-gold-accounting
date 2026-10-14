@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-single/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# AI Studio internal files
+.aistudio/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,6 @@
+{
+  "name": "حسابداری طلا و جواهر کوشا",
+  "description": "سامانه تخصصی و جامع حسابداری طلا و جواهر کوشا با حسابداری ارزی-وزنی (ریالی و گرمی)، مدیریت هزینه‌ها و درآمدها، کدینگ کل و معین، کاردکس کالا و مالیات ماده ۲۶",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

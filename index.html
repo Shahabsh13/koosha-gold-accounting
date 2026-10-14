@@ -1,0 +1,3716 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کوشا | حسابداری طلا و جواهر</title>
+<meta name="description" content="سامانه جامع حسابداری طلا و جواهر کوشا با ثبت فاکتورهای فروش و تعویض طلا، ماده ۲۶ ارزش افزوده، دفاتر کل و معین، و انبارداری وزنی و ریالی">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0e14;
+    --panel:#111622;
+    --elev:#181f30;
+    --elev-2:#20293d;
+    --border:#263147;
+    --border-subtle:rgba(255,255,255,0.06);
+    --gold:#d4a838;
+    --gold-bright:#fbbf24;
+    --gold-dim:#947427;
+    --gold-glow:rgba(251, 191, 36, 0.15);
+    --text:#f8fafc;
+    --text-dim:#94a3b8;
+    --text-faint:#64748b;
+    --danger:#f43f5e;
+    --danger-bg:rgba(244, 63, 94, 0.12);
+    --success:#10b981;
+    --success-bg:rgba(16, 185, 129, 0.12);
+    --radius:10px;
+    --shadow: 0 10px 25px -4px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  *{box-sizing:border-box;}
+  input, button, select, textarea, optgroup, table, th, td {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+  }
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 500px at 80% -5%, rgba(212,168,56,.09), transparent 70%),
+      radial-gradient(700px 400px at 15% 20%, rgba(16,185,129,.03), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Vazirmatn', Tahoma, sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+  ::selection{ background: rgba(251,191,36,.35); }
+
+  /* ---------- top ticker ---------- */
+  .ticker{
+    height:34px;
+    background: linear-gradient(90deg, #0f141f, #151c2c 30%, #1e2638 50%, #151c2c 70%, #0f141f);
+    border-bottom: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:600; color:var(--text);
+    letter-spacing:.2px;
+    gap:10px;
+    padding: 0 12px;
+  }
+
+  /* ---------- layout ---------- */
+  .app{ display:flex; min-height:calc(100% - 34px); }
+  .sidebar{
+    width:152px; flex:0 0 152px;
+    background:var(--panel);
+    border-left:1px solid var(--border);
+    padding:14px 6px 12px;
+    display:flex; flex-direction:column; gap:2px;
+    transition: width .2s cubic-bezier(0.4, 0, 0.2, 1), flex-basis .2s cubic-bezier(0.4, 0, 0.2, 1), padding .2s ease;
+    user-select: none;
+  }
+  .sidebar.collapsed{
+    width:50px; flex:0 0 50px;
+    padding:14px 4px 12px;
+  }
+  .sidebar-header{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px; padding:0 3px 8px;
+    border-bottom:1px solid var(--border);
+    gap:4px;
+  }
+  .sidebar.collapsed .sidebar-header{
+    justify-content:center;
+    padding:0 0 8px;
+  }
+  .sidebar.collapsed .brand-info,
+  .sidebar.collapsed .nav-label,
+  .sidebar.collapsed .sidebar-foot{
+    display:none !important;
+  }
+  .sidebar.collapsed .brand{
+    display:none;
+  }
+  .sidebar.collapsed .nav-item{
+    justify-content:center;
+    padding:8px 0;
+    gap:0;
+  }
+  .brand{
+    display:flex; align-items:center; gap:6px;
+    min-width:0;
+  }
+  .brand svg{ width:22px; height:22px; flex:0 0 auto; }
+  .brand-name{ font-weight:800; font-size:13.5px; letter-spacing:.2px; line-height:1.2; }
+  .brand-sub{ font-size:8.5px; color:var(--text-faint); margin-top:1px; white-space:nowrap; }
+
+  .sidebar-toggle-btn{
+    background:transparent; border:1px solid transparent;
+    color:var(--text-dim); border-radius:5px;
+    width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; padding:0; flex:0 0 auto;
+    transition:.15s;
+  }
+  .sidebar-toggle-btn:hover{
+    background:var(--elev-2); color:var(--gold-bright); border-color:var(--border);
+  }
+  .sidebar-toggle-btn svg{
+    width:13px; height:13px;
+    transition:transform .2s ease;
+  }
+  .sidebar.collapsed .sidebar-toggle-btn svg{
+    transform:rotate(180deg);
+  }
+
+  .nav-item{
+    display:flex; align-items:center; gap:7px;
+    padding:6px 8px; border-radius:6px;
+    color:var(--text-dim); font-size:11.5px; font-weight:600;
+    cursor:pointer; border:1px solid transparent;
+    transition:.15s; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis;
+    position:relative;
+  }
+  .nav-item:hover{ background:var(--elev); color:var(--text); }
+  .nav-item.active{ background:var(--elev-2); color:var(--gold-bright); border-color:var(--border); }
+  .nav-item.popover-open{ background:var(--elev-2); color:var(--gold-bright); border-color:rgba(201,162,39,0.5); box-shadow:0 0 0 1px rgba(201,162,39,0.3); }
+  .nav-item svg{ width:15px; height:15px; opacity:.85; flex:0 0 auto; }
+  .nav-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+  .nav-sub-arrow{
+    font-size:11px; color:var(--text-faint); margin-right:auto; margin-left:0; flex:0 0 auto;
+    transition: transform .15s ease, color .15s ease;
+    display:flex; align-items:center; opacity:0.45;
+  }
+  .nav-item:hover .nav-sub-arrow{ color:var(--gold-bright); opacity:0.9; }
+  .nav-item.popover-open .nav-sub-arrow{ transform:translateX(-2px); color:var(--gold-bright); opacity:1; }
+  .sidebar.collapsed .nav-sub-arrow{ display:none !important; }
+
+  /* ---------- Nav Flyout Popover (Minimal & Clean) ---------- */
+  .nav-flyout-popover{
+    position:fixed;
+    z-index:1200;
+    background:var(--panel);
+    border:1px solid rgba(201,162,39,0.3);
+    border-radius:10px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06);
+    width:180px;
+    padding:5px;
+    display:none;
+    flex-direction:column;
+    gap:2px;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    direction:rtl;
+    user-select:none;
+    animation:flyoutFadeIn .12s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-flyout-popover.active{
+    display:flex;
+  }
+  @keyframes flyoutFadeIn{
+    from{ opacity:0; transform:translateX(5px) scale(0.98); }
+    to{ opacity:1; transform:translateX(0) scale(1); }
+  }
+  .nav-flyout-items{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .nav-flyout-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 10px;
+    border-radius:7px;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:all .12s ease;
+    color:var(--text);
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .nav-flyout-item:hover{
+    background:var(--elev-2);
+    border-color:rgba(201,162,39,0.35);
+    color:var(--gold-bright);
+    transform:translateX(-2px);
+  }
+  .nav-flyout-item.active{
+    background:rgba(201,162,39,0.15);
+    border-color:rgba(201,162,39,0.4);
+    color:var(--gold-bright);
+    font-weight:800;
+  }
+  .nav-flyout-item-icon{
+    font-size:14px;
+    width:18px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+
+  /* ---------- Top Invoice Mode Switcher ---------- */
+  .inv-mode-switcher-top{
+    display:flex;
+    background:var(--elev);
+    padding:3px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    gap:4px;
+    align-items:center;
+  }
+  .inv-mode-tab-btn{
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:6px;
+    padding:5px 12px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:all .15s ease;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .inv-mode-tab-btn:hover{
+    color:var(--text);
+    background:var(--elev-2);
+  }
+  .inv-mode-tab-btn.active{
+    background:var(--panel);
+    color:var(--gold-bright);
+    border-color:rgba(201,162,39,0.35);
+    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  .sidebar-foot{
+    margin-top:auto; padding-top:8px; border-top:1px solid var(--border);
+    font-size:9.5px; color:var(--text-faint); line-height:1.4; text-align:center;
+  }
+
+  .main{ flex:1; padding:18px 22px; overflow-y:auto; min-width:0; }
+  .page-head{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px;}
+  .page-title{ font-size:21px; font-weight:800; }
+  .page-desc{ font-size:12.5px; color:var(--text-faint); margin-top:4px; }
+
+  .btn{
+    background:var(--elev-2); color:var(--text); border:1px solid var(--border);
+    padding:9px 16px; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600;
+    cursor:pointer; transition:.15s; display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .btn:hover{ border-color:var(--gold-dim); }
+  .btn-gold{
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color:#241c05; border:none; font-weight:700;
+  }
+  .btn-gold:hover{ filter:brightness(1.07); }
+  .btn-sm{ padding:6px 11px; font-size:12px; }
+  .btn:focus-visible, input:focus-visible, select:focus-visible, .nav-item:focus-visible{
+    outline:2px solid var(--gold-bright); outline-offset:2px;
+  }
+
+  /* ---------- cards / grid ---------- */
+  .grid{ display:grid; gap:16px; }
+  .grid-4{ grid-template-columns:repeat(4,1fr); }
+  .grid-3{ grid-template-columns:repeat(3,1fr); }
+  .grid-2{ grid-template-columns:1.3fr .9fr; align-items:start; }
+  @media (max-width:1000px){ .grid-4{grid-template-columns:repeat(2,1fr);} .grid-2{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow);
+  }
+  .stat-label{ font-size:11.5px; color:var(--text-faint); font-weight:600; }
+  .stat-value{ font-size:24px; font-weight:800; margin-top:8px; color:var(--gold-bright); }
+  .stat-sub{ font-size:11px; color:var(--text-dim); margin-top:4px; }
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .table-responsive::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+  .table-responsive::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.25);
+    border-radius: 4px;
+  }
+  .table-responsive::-webkit-scrollbar-thumb {
+    background: rgba(217,119,6,0.45);
+    border-radius: 4px;
+  }
+  .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: rgba(217,119,6,0.8);
+  }
+
+  table{ 
+    width:100%; 
+    min-width:100%; 
+    border-collapse:separate; 
+    border-spacing:0; 
+    font-size:12.5px; 
+    background:var(--panel); 
+    table-layout:fixed;
+  }
+  th{ 
+    text-align:right; color:var(--text-faint); font-weight:700; padding:10px 12px; 
+    border-bottom:1px solid var(--border); border-left:1px solid var(--border); 
+    font-size:11.5px; background:var(--elev-2); position:relative; user-select:none;
+    white-space:nowrap;
+    box-sizing:border-box;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  th:last-child{ border-left:none; }
+  .sortable-th{ cursor:pointer; user-select:none; white-space:nowrap; }
+  .sortable-th:hover{ color:var(--text-bright); background:var(--elev); }
+  .sort-indicator{ display:inline-block; margin-right:4px; font-size:10px; color:var(--gold-bright); width:10px; }
+  
+  .col-resizer {
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:8px;
+    cursor:col-resize;
+    user-select:none;
+    z-index:15;
+    background:transparent;
+    transition:background 0.15s ease;
+  }
+  .col-resizer:hover, .col-resizer.resizing {
+    background:var(--gold-bright) !important;
+    opacity:0.9;
+  }
+  body.resizing-active {
+    cursor:col-resize !important;
+    user-select:none !important;
+  }
+
+  td{ 
+    padding:10px 12px; 
+    border-bottom:1px solid rgba(255,255,255,0.06); 
+    border-left:1px solid rgba(255,255,255,0.06); 
+    color:var(--text); 
+    vertical-align:middle; 
+    box-sizing:border-box;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  td:last-child{ border-left:none; }
+  tr:last-child td{ border-bottom:none; }
+  tr:hover td{ background:rgba(255,255,255,.03); }
+  tr.selected-row td{ background:rgba(217,119,6,0.18) !important; color:var(--text-bright); }
+  tr.selected-row{ outline:1px solid var(--gold-bright); }
+  .columns-panel{
+    position:absolute; top:100%; left:0; margin-top:6px; z-index:25;
+    background:var(--elev-2); border:1px solid var(--border); border-radius:8px; box-shadow:var(--shadow);
+    padding:8px; min-width:170px;
+  }
+  .columns-panel-item{ display:flex; align-items:center; gap:8px; padding:6px 6px; font-size:12px; color:var(--text); cursor:pointer; border-radius:6px; }
+  .columns-panel-item:hover{ background:var(--elev); }
+  .columns-panel-item input{ width:14px; height:14px; accent-color:var(--gold); }
+  .coa-node-row{ display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; cursor:pointer; border-bottom:1px solid var(--border); }
+  .coa-node-row:hover{ background:var(--elev); }
+  .coa-node-row-top{ font-weight:700; }
+  .coa-node-row-top .coa-code{ color:var(--gold-bright); font-size:12px; }
+  .coa-node-row-top .coa-name{ font-size:13.5px; }
+  .coa-arrow{ color:var(--gold-bright); font-size:11px; width:14px; flex:0 0 auto; text-align:center; }
+  .coa-code{ font-weight:700; color:var(--text-dim); font-size:11.5px; flex:0 0 auto; min-width:64px; }
+  .coa-name{ flex:1; font-weight:600; font-size:12.5px; color:var(--text); }
+  .coa-icons{ flex:0 0 auto; font-size:11px; display:flex; align-items:center; gap:6px; }
+  .coa-nature{ color:var(--text-faint); font-size:10.5px; border:1px solid var(--border); border-radius:10px; padding:1px 7px; }
+  .coa-lock{ font-size:11px; }
+  .coa-children{ padding-bottom:4px; border-bottom:1px solid var(--border); }
+  .coa-leaf-row{ display:flex; align-items:center; gap:10px; padding:7px 10px; font-size:11.5px; color:var(--text-dim); }
+  .coa-leaf-row > span:first-child{ flex:1; }
+  .coa-add-form{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:4px; }
+  .coa-add-form input, .coa-add-form select{ width:auto; flex:0 1 200px; }
+  td{ padding:9px 10px; border-bottom:1px solid rgba(58,51,39,.55); color:var(--text); }
+  tr:last-child td{ border-bottom:none; }
+  tr:hover td{ background:rgba(255,255,255,.015); }
+
+  .badge{ display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10.5px; font-weight:700; }
+  .badge-synced{ background:rgba(126,157,111,.15); color:var(--success); }
+  .badge-pending{ background:rgba(201,162,39,.15); color:var(--gold-bright); }
+  .badge-expense{ background:rgba(224,93,93,.16); color:#f28b82; }
+  .badge-expense-return{ background:rgba(86,180,233,.16); color:#78c2ec; }
+  .badge-income{ background:rgba(126,157,111,.16); color:var(--success); }
+  .badge-income-return{ background:rgba(230,159,0,.16); color:#e69f00; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+  label{ display:block; font-size:12px; color:var(--text-dim); font-weight:600; margin-bottom:6px; }
+  input, select{
+    width:100%; background:var(--elev); border:1px solid var(--border); color:var(--text);
+    padding:9px 11px; border-radius:8px; font-family:inherit; font-size:13px;
+  }
+  input::placeholder{ color:var(--text-faint); }
+  .field{ margin-bottom:13px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .row4{ display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; }
+
+  .divider{ height:1px; background:var(--border); margin:16px 0; }
+
+  .empty{ text-align:center; padding:34px 10px; color:var(--text-faint); font-size:12.5px; }
+
+  .pill-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .pill{ padding:5px 12px; border-radius:20px; border:1px solid var(--border); font-size:11.5px; color:var(--text-dim); background:var(--elev); }
+
+  .tab-row{ display:flex; gap:8px; margin-bottom:18px; border-bottom:1px solid var(--border); padding-bottom:0; }
+  .tab-btn{ padding:9px 16px; border-radius:8px 8px 0 0; font-size:13px; font-weight:600; color:var(--text-faint); cursor:pointer; border:1px solid transparent; border-bottom:none; margin-bottom:-1px; }
+  .tab-btn:hover{ color:var(--text); }
+  .tab-btn.active{ color:var(--gold-bright); background:var(--panel); border-color:var(--border); }
+
+  /* ---------- expense left sidebar layout ---------- */
+  .expense-layout{ display:flex; gap:18px; align-items:flex-start; }
+  .expense-main-col{ flex:1; min-width:0; }
+  .expense-side-col{ width:235px; flex:0 0 235px; position:sticky; top:16px; display:flex; flex-direction:column; gap:12px; }
+  @media (max-width:980px){
+    .expense-layout{ flex-direction:column; }
+    .expense-side-col{ width:100%; flex:0 0 auto; position:static; }
+  }
+  .side-nav-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:10px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:4px;
+  }
+  .side-nav-head{
+    font-size:11px; font-weight:700; color:var(--text-faint); padding:6px 8px 8px; border-bottom:1px solid var(--border); margin-bottom:4px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .side-tab-item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:9px 11px; border-radius:8px; font-size:12.5px; font-weight:600;
+    color:var(--text-dim); cursor:pointer; border:1px solid transparent; transition:.15s;
+  }
+  .side-tab-item:hover{ background:var(--elev); color:var(--text); }
+  .side-tab-item.active{ background:var(--elev-2); color:var(--gold-bright); border-color:var(--border); font-weight:700; }
+  .side-tab-badge{
+    font-size:10.5px; padding:2px 7px; border-radius:12px; font-weight:700;
+    background:var(--elev); color:var(--text-dim);
+  }
+  .side-tab-item.active .side-tab-badge{ background:rgba(201,162,39,.18); color:var(--gold-bright); }
+
+  .finance-subview{ display:none; }
+  .finance-subview.active{ display:block; }
+  .balance-pos{ color:var(--success); font-weight:700; }
+  .balance-neg{ color:var(--danger); font-weight:700; }
+
+  .invoice-line{
+    display:grid; grid-template-columns: 2fr 1.2fr .8fr 1.1fr .8fr .8fr 1fr auto; gap:8px; align-items:start; margin-bottom:12px;
+    background:rgba(38,34,27,0.4); padding:10px; border-radius:8px; border:1px solid var(--border);
+  }
+  .invoice-line .field{ margin-bottom:0; }
+  .remove-line{ background:none; border:1px solid var(--border); color:var(--danger); border-radius:8px; padding:8px; cursor:pointer; height:37px;}
+  @media (max-width:1150px){
+    .invoice-line{ grid-template-columns: repeat(2, 1fr); }
+    .invoice-line .remove-line{ grid-column: span 2; width:100%; }
+  }
+  .settlement-line{
+    display:grid; grid-template-columns: .8fr 1.8fr .9fr auto; gap:8px; align-items:end; margin-bottom:10px;
+  }
+  .settlement-line .field{ margin-bottom:0; }
+  @media (max-width:900px){
+    .settlement-line{ grid-template-columns: repeat(2, 1fr); }
+    .settlement-line .remove-line{ grid-column: span 2; width:100%; }
+  }
+  .suggest-empty{ padding:8px 10px; font-size:11px; color:var(--text-faint); }
+  .unlink-link{ display:none; margin-top:4px; font-size:10.5px; color:var(--gold-bright); text-decoration:underline; cursor:pointer; }
+
+  body.modal-open {
+    overflow: hidden !important;
+    touch-action: none;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 8, 5, .78);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overscroll-behavior: contain;
+  }
+  .modal-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 620px;
+    max-width: 100%;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .6);
+    overflow: hidden;
+    animation: modalPop .18s ease-out;
+    overscroll-behavior: contain;
+  }
+  .modal-box-wide{ width:880px; }
+  .modal-body{ padding:18px 20px; overflow-y:auto; flex:1 1 auto; max-height:calc(88vh - 120px); }
+  @keyframes modalPop{ from{ opacity:0; transform:scale(.97) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+  .modal-list table{ width:100%; }
+  .modal-row{ cursor:pointer; }
+  .modal-row:hover td{ background:var(--elev); }
+  .modal-header{ display:flex; justify-content:space-between; align-items:center; padding:16px 18px; border-bottom:1px solid var(--border); flex:0 0 auto; }
+  .modal-title{ font-weight:800; font-size:14.5px; color:var(--gold-bright); }
+  .modal-close{ background:none; border:none; color:var(--text-dim); font-size:17px; cursor:pointer; line-height:1; padding:4px; }
+  .modal-close:hover{ color:var(--text); }
+  .modal-search{ padding:14px 18px 8px; flex:0 0 auto; }
+  .modal-list{ overflow-y:auto; padding:4px 12px 10px; flex:1; }
+  .modal-footer{ padding:12px 18px; border-top:1px solid var(--border); background:var(--elev); display:flex; gap:8px; justify-content:flex-end; flex:0 0 auto; }
+
+  .summary-row{ display:flex; justify-content:space-between; font-size:13px; padding:6px 0; color:var(--text-dim); }
+  .summary-row b{ color:var(--text); font-weight:700; }
+  .summary-total{ font-size:17px; font-weight:800; color:var(--gold-bright); border-top:1px solid var(--border); margin-top:6px; padding-top:12px; }
+
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .toast-wrap{ 
+    position:fixed; 
+    top:24px; 
+    left:50%; 
+    transform:translateX(-50%); 
+    display:flex; 
+    flex-direction:column; 
+    gap:10px; 
+    z-index:999999; 
+    max-width:92vw; 
+    width:480px; 
+    pointer-events:none; 
+  }
+  .toast{
+    pointer-events:auto;
+    background:rgba(28, 24, 18, 0.97); 
+    border:1.5px solid var(--gold-dim); 
+    color:var(--text-bright);
+    padding:12px 18px; 
+    border-radius:10px; 
+    font-size:13px; 
+    font-weight:600;
+    box-shadow:0 14px 40px rgba(0,0,0,0.7);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    animation: toastPop .22s cubic-bezier(0.16, 1, 0.3, 1);
+    direction:rtl;
+    text-align:right;
+  }
+  .toast.toast-error{
+    background:rgba(42, 14, 17, 0.98) !important;
+    border:1.5px solid #ef4444 !important;
+    color:#ffffff !important;
+    box-shadow:0 14px 40px rgba(239, 68, 68, 0.38) !important;
+  }
+  .toast.toast-error .toast-icon{
+    color:#ef4444;
+    font-size:18px;
+    flex-shrink:0;
+  }
+  .toast.toast-success{
+    background:rgba(12, 38, 22, 0.98) !important;
+    border:1.5px solid #10b981 !important;
+    color:#ffffff !important;
+    box-shadow:0 14px 40px rgba(16, 185, 129, 0.35) !important;
+  }
+  .toast.toast-success .toast-icon{
+    color:#10b981;
+    font-size:18px;
+    flex-shrink:0;
+  }
+  .toast.toast-info{
+    background:rgba(38, 32, 18, 0.98) !important;
+    border:1.5px solid var(--gold) !important;
+    color:#ffffff !important;
+    box-shadow:0 14px 40px rgba(201, 162, 39, 0.35) !important;
+  }
+  @keyframes toastPop{ from{ opacity:0; transform:translateY(-12px) scale(0.96);} to{opacity:1; transform:translateY(0) scale(1);} }
+
+  .log-item{ display:flex; gap:10px; font-size:12px; padding:8px 0; border-bottom:1px solid rgba(58,51,39,.5); color:var(--text-dim); }
+  .log-item:last-child{ border-bottom:none; }
+  .log-time{ color:var(--text-faint); font-size:11px; white-space:nowrap; }
+
+  .badge-doc-perm{ background:rgba(255,255,255,0.06); color:var(--text-dim); border:1px solid var(--border); font-family:monospace, inherit; font-size:11px; font-weight:700; padding:2px 7px; border-radius:6px; }
+  .badge-doc-num{ color:var(--gold-bright); font-weight:800; }
+  .badge-doc-opening{ background:rgba(59, 130, 246, 0.16); color:#60a5fa; border:1px solid rgba(59, 130, 246, 0.35); font-weight:800; }
+  .badge-inv-num{ background:rgba(201,162,39,0.18); color:var(--gold-bright); border:1px solid rgba(201,162,39,0.3); font-weight:700; padding:2px 7px; border-radius:6px; font-size:11.5px; }
+  .badge-doc-perm-sm{ background:rgba(255,255,255,0.05); color:var(--text-dim); border:1px solid rgba(255,255,255,0.12); font-size:10.5px; font-weight:700; padding:1px 5px; border-radius:4px; display:inline-block; font-variant-numeric:tabular-nums; }
+  .badge-doc-num-sm{ background:rgba(201,162,39,0.12); color:var(--gold-bright); border:1px solid rgba(201,162,39,0.28); font-size:10.5px; font-weight:800; padding:1px 5px; border-radius:4px; display:inline-block; font-variant-numeric:tabular-nums; }
+  .badge-inv-num-sm{ background:rgba(168,85,247,0.14); color:#c084fc; border:1px solid rgba(168,85,247,0.3); font-size:10.5px; font-weight:800; padding:1px 5px; border-radius:4px; display:inline-block; font-variant-numeric:tabular-nums; }
+
+  /* ========================================================= */
+  /* CUSTOMERS MODERN & MINIMAL STYLING                        */
+  /* ========================================================= */
+  .cust-modern-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-bottom: 4px;
+  }
+  .cust-modern-title-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cust-modern-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+    color: var(--text);
+  }
+  .cust-modern-subtitle {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+  .cust-modern-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn-modern-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    box-shadow: 0 4px 14px rgba(201,162,39,0.22);
+    border: none;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-modern-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(201,162,39,0.32);
+  }
+  .cust-actions-group {
+    display: inline-flex;
+    align-items: center;
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .btn-modern-ghost {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-modern-ghost:hover {
+    background: var(--elev-2);
+    color: var(--text);
+  }
+  .btn-modern-danger {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--danger);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-modern-danger:hover {
+    background: rgba(192, 90, 79, 0.15);
+    color: #ff7b6b;
+  }
+
+  .cust-table-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .cust-search-bar {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,0,0,0.12);
+  }
+  .cust-search-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .cust-search-icon {
+    position: absolute;
+    right: 10px;
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .cust-search-input {
+    width: 100%;
+    padding: 7px 34px 7px 10px;
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text);
+    transition: all 0.15s ease;
+  }
+  .cust-search-input:focus {
+    border-color: var(--gold-dim);
+    box-shadow: 0 0 0 2px rgba(201,162,39,0.12);
+    outline: none;
+  }
+
+  .cust-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 900px) {
+    .cust-kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .cust-kpi-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .cust-kpi-card:hover {
+    border-color: rgba(255,255,255,0.12);
+    background: var(--elev);
+  }
+  .cust-kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+  .cust-kpi-val {
+    font-size: 16.5px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 3px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cust-kpi-gold {
+    color: var(--gold-bright);
+  }
+  .cust-kpi-toman {
+    color: #38bdf8;
+  }
+  .cust-kpi-unit {
+    font-size: 11px;
+    font-weight: normal;
+    color: var(--text-faint);
+  }
+  .cust-kpi-sub {
+    font-size: 10.5px;
+    color: var(--text-dim);
+  }
+
+  .cust-table-wrapper {
+    margin-bottom: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+  }
+  .cust-modern-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+  }
+  .cust-modern-table th {
+    background: rgba(24, 31, 48, 0.9);
+    backdrop-filter: blur(8px);
+    color: var(--text-dim);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    border-left: 1px solid rgba(255,255,255,0.03);
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+  }
+  .cust-modern-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-left: 1px solid rgba(255,255,255,0.02);
+    font-size: 12px;
+    transition: background 0.12s ease;
+    vertical-align: middle;
+  }
+  .cust-modern-table tr:nth-child(even) td {
+    background: rgba(255,255,255,0.012);
+  }
+  .cust-modern-table tr:hover td {
+    background: rgba(255,255,255,0.035) !important;
+  }
+  .cust-modern-table tr.selected-row td {
+    background: rgba(212, 168, 56, 0.14) !important;
+  }
+  .cust-modern-table tr.selected-row {
+    outline: 1px solid rgba(251, 191, 36, 0.55);
+  }
+
+  .cust-row-name-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .cust-row-title-line {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .cust-row-name-text {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 12.5px;
+  }
+  .cust-row-meta {
+    font-size: 10.5px;
+    color: var(--text-faint);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cust-pill-tag {
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    letter-spacing: 0.1px;
+  }
+  .cust-pill-gold {
+    background: rgba(251,191,36,0.12);
+    color: var(--gold-bright);
+    border: 1px solid rgba(251,191,36,0.25);
+  }
+  .cust-pill-blue {
+    background: rgba(56,189,248,0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.25);
+  }
+  .cust-pill-purple {
+    background: rgba(168,85,247,0.12);
+    color: #c084fc;
+    border: 1px solid rgba(168,85,247,0.25);
+  }
+  .cust-pill-green {
+    background: rgba(16,185,129,0.12);
+    color: #34d399;
+    border: 1px solid rgba(16,185,129,0.25);
+  }
+
+  .cust-bal-cell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    direction: ltr;
+  }
+  .cust-bal-num {
+    font-variant-numeric: tabular-nums;
+    font-size: 12.5px;
+    font-weight: 700;
+    min-width: 90px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .cust-bal-unit {
+    font-size: 10.5px;
+    font-weight: 400;
+    color: var(--text-faint);
+    margin-right: 2px;
+  }
+  .cust-bal-status-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .cust-bal-status-gold {
+    background: rgba(251, 191, 36, 0.14);
+    color: var(--gold-bright);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+  .cust-bal-status-red {
+    background: rgba(244, 63, 94, 0.14);
+    color: var(--danger);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+  }
+  .cust-bal-status-zero {
+    color: var(--text-faint);
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .cust-modern-sidebar {
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .cust-sidebar-head {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-dim);
+    padding: 4px 6px 10px;
+  }
+  .cust-sidebar-tag {
+    font-size: 10px;
+    color: var(--text-faint);
+    background: rgba(255,255,255,0.05);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  .cust-branch-tab {
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 2px;
+  }
+  .cust-branch-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+  .cust-branch-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cust-branch-dot-gold { background: var(--gold); }
+  .cust-branch-dot-blue { background: #60a5fa; }
+  .cust-branch-dot-purple { background: #c084fc; }
+
+  .cust-sidebar-subgroup {
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+  .cust-sidebar-subhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-faint);
+  }
+  .btn-ghost-pill {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-ghost-pill:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold-bright);
+  }
+  .cust-category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .cust-cat-item-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.12s ease;
+    background: transparent;
+    text-align: right;
+    width: 100%;
+  }
+  .cust-cat-item-btn:hover {
+    background: var(--elev);
+    color: var(--text);
+  }
+  .cust-cat-item-btn.active {
+    background: var(--elev-2);
+    color: var(--gold-bright);
+    font-weight: 700;
+    border-color: rgba(201,162,39,0.25);
+  }
+  .cust-cat-count {
+    font-size: 10.5px;
+    color: var(--text-faint);
+    background: var(--elev);
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+  .cust-cat-item-btn.active .cust-cat-count {
+    background: rgba(201,162,39,0.18);
+    color: var(--gold-bright);
+  }
+  .cust-empty-state {
+    padding: 42px 16px;
+  }
+
+  /* ========================================================= */
+  /* MODERN MODULAR CUSTOMER FORM MODAL STYLES                 */
+  /* ========================================================= */
+  .cust-modal-box {
+    background: var(--bg-card, #1c1914);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 24px 65px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 720px;
+    max-width: 95vw;
+    max-height: 88vh;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    overscroll-behavior: contain;
+  }
+  .cust-modal-box.cust-modal-maximized {
+    width: 98vw;
+    max-width: 98vw;
+    height: 96vh;
+    max-height: 96vh;
+    border-radius: 10px;
+  }
+  .cust-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 18px;
+    background: rgba(0, 0, 0, 0.28);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .cust-modal-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .cust-modal-title {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cust-modal-subtitle {
+    font-size: 10.5px;
+    color: var(--text-faint);
+  }
+  .cust-modal-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .cust-modal-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .cust-modal-action-btn:hover {
+    background: var(--elev);
+    color: var(--text);
+  }
+  .cust-modal-action-btn.active {
+    color: var(--gold-bright);
+    background: rgba(201, 162, 39, 0.12);
+  }
+
+  /* MODAL TAB NAVIGATION BAR - COMPACT SEGMENTED NO-SCROLL LAYOUT */
+  .cust-form-tabs-bar {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.22);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .cust-form-tab-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    padding: 6px 4px;
+    border-radius: 6px;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+    text-align: center;
+    transition: all 0.14s ease;
+  }
+  .cust-form-tab-btn svg {
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
+  .cust-form-tab-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cust-form-tab-btn:hover {
+    color: var(--text);
+    background: var(--elev);
+  }
+  .cust-form-tab-btn.active {
+    color: var(--gold-bright);
+    background: var(--elev-2);
+    border-color: rgba(201, 162, 39, 0.28);
+    font-weight: 700;
+  }
+  .cust-form-tab-all-btn {
+    flex: 0 0 auto;
+    padding: 6px 9px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    margin-right: 2px;
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .cust-form-tab-all-btn:hover {
+    color: var(--text);
+  }
+  .cust-tab-badge {
+    font-size: 9.5px;
+    background: var(--elev);
+    color: var(--text-faint);
+    padding: 1px 5px;
+    border-radius: 8px;
+  }
+  .cust-form-tab-btn.active .cust-tab-badge {
+    background: rgba(201, 162, 39, 0.2);
+    color: var(--gold-bright);
+  }
+
+  .cust-modal-body-scroll {
+    padding: 14px 18px;
+    max-height: calc(88vh - 125px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overscroll-behavior: contain;
+    flex: 1;
+  }
+  .cust-modal-box.cust-modal-maximized .cust-modal-body-scroll {
+    max-height: calc(93vh - 120px);
+    padding: 18px 24px;
+  }
+
+  .cust-tab-panel {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cust-tab-panel.active {
+    display: flex;
+  }
+
+  .cust-form-path-banner {
+    background: rgba(201, 162, 39, 0.06);
+    border: 1px solid rgba(201, 162, 39, 0.18);
+    border-radius: 6px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+  }
+  .cust-path-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cust-path-label {
+    color: var(--text-dim);
+    font-size: 10.5px;
+  }
+  .cust-path-val {
+    font-weight: 700;
+    color: var(--gold-bright);
+    letter-spacing: 0.1px;
+  }
+
+  .cust-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .cust-form-sec-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+  .cust-form-sec-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+  .cust-form-sec-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.1px;
+  }
+  .cust-form-sec-tag {
+    font-size: 9.5px;
+    color: var(--text-faint);
+    margin-right: auto;
+  }
+
+  .cust-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px 12px;
+  }
+  .cust-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 8px 12px;
+  }
+  .cust-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px 12px;
+  }
+
+  .cust-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .cust-field-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .cust-field-required {
+    color: var(--gold-bright);
+    font-weight: 800;
+  }
+  .cust-input-control {
+    height: 31px;
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0 9px;
+    font-size: 11.5px;
+    color: var(--text);
+    transition: all 0.15s ease;
+    width: 100%;
+  }
+  .cust-input-control:focus {
+    border-color: var(--gold-dim);
+    box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.12);
+    outline: none;
+    background: var(--elev-2);
+  }
+  .cust-input-control::placeholder {
+    color: var(--text-faint);
+    font-size: 11px;
+    font-weight: normal;
+  }
+  .cust-input-bold {
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .cust-input-ltr {
+    direction: ltr;
+    text-align: left;
+  }
+  .cust-input-center {
+    direction: ltr;
+    text-align: center;
+  }
+  .cust-input-mono {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+  }
+  .cust-code-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201, 162, 39, 0.12);
+    color: var(--gold-bright);
+    border: 1px solid rgba(201, 162, 39, 0.32);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    direction: ltr;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+  }
+  .item-code-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(96, 165, 250, 0.12);
+    color: #93c5fd;
+    border: 1px solid rgba(96, 165, 250, 0.32);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    direction: ltr;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+  }
+  .acc-code-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(52, 211, 153, 0.12);
+    color: #6ee7b7;
+    border: 1px solid rgba(52, 211, 153, 0.32);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    direction: ltr;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+  }
+  .cust-readonly-code {
+    background: rgba(0, 0, 0, 0.32) !important;
+    border-color: rgba(201, 162, 39, 0.28) !important;
+    color: var(--gold-bright) !important;
+    font-weight: 700 !important;
+    cursor: default !important;
+    user-select: all;
+  }
+
+  /* CUSTOMER STATEMENT MODERN STYLES */
+  .statement-modal-box {
+    max-width: 1220px;
+    width: 98vw;
+    height: 94vh;
+    max-height: 94vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.75);
+    background: var(--panel);
+  }
+  .statement-row {
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .statement-row:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+  .statement-row-active {
+    background: rgba(201, 162, 39, 0.14) !important;
+    outline: 1px solid rgba(201, 162, 39, 0.45);
+    box-shadow: inset 3px 0 0 var(--gold-bright);
+  }
+  .statement-row-active td {
+    color: #fff !important;
+  }
+  .statement-item-subrow {
+    background: rgba(0, 0, 0, 0.22);
+    font-size: 11px;
+    color: var(--text-dim);
+    transition: background 0.15s ease;
+  }
+  .statement-item-subrow:hover {
+    background: rgba(201, 162, 39, 0.07) !important;
+  }
+  .statement-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    height: 28px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--elev);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+  .statement-tool-btn:hover:not(:disabled) {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    background: rgba(201, 162, 39, 0.12);
+  }
+  .statement-tool-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: transparent;
+  }
+  .statement-tool-btn.active-accent {
+    border-color: var(--gold);
+    color: #1a1608;
+    background: var(--gold);
+    font-weight: 800;
+  }
+  .statement-tool-btn.toggle-off {
+    opacity: 0.6;
+    border-style: dashed;
+  }
+  .statement-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .badge-op-sell { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.35); }
+  .badge-op-buy { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.35); }
+  .badge-op-melt { background: rgba(234, 179, 8, 0.15); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.35); }
+  .badge-op-return { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.35); }
+  .badge-op-deposit { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35); }
+  .badge-op-payment { background: rgba(249, 115, 22, 0.15); color: #fdba74; border: 1px solid rgba(249, 115, 22, 0.35); }
+  .badge-op-check-in { background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.35); }
+  .badge-op-check-out { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.35); }
+  .badge-op-journal { background: rgba(100, 116, 139, 0.18); color: #cbd5e1; border: 1px solid rgba(100, 116, 139, 0.35); }
+  .badge-op-expense { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.35); }
+
+  /* CUSTOMER STATEMENT VIEW MODE */
+  .statement-view-mode-tabs {
+    display: inline-flex;
+    align-items: center;
+    background: var(--elev-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1px;
+    gap: 1px;
+    height: 28px;
+  }
+  .statement-view-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    height: 24px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .statement-view-tab:hover {
+    color: var(--text-bright);
+  }
+  .statement-view-tab.active {
+    background: var(--gold);
+    color: #1a1608;
+    font-weight: 800;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  .statement-table-container {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 380px;
+    position: relative;
+  }
+  .statement-table-scroll {
+    overflow-x: auto;
+    overflow-y: auto;
+    flex: 1;
+    height: 100%;
+  }
+  .statement-bottom-bar {
+    padding: 10px 18px;
+    background: var(--elev-2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.45);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .statement-bottom-stat {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .statement-bottom-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  .statement-item-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: rgba(201, 162, 39, 0.12);
+    color: var(--gold-bright);
+    border: 1px solid rgba(201, 162, 39, 0.25);
+  }
+
+  @keyframes voucherGlow {
+    0% { background-color: rgba(201, 162, 39, 0.55); box-shadow: 0 0 16px rgba(201, 162, 39, 0.7); }
+    50% { background-color: rgba(201, 162, 39, 0.28); }
+    100% { background-color: transparent; }
+  }
+  .vouchers-row-highlighted {
+    animation: voucherGlow 3s ease-out forwards;
+    outline: 2px solid var(--gold);
+  }
+
+  .cust-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 18px;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .cust-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cust-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+
+  @media print{
+    .ticker, .sidebar, .btn, .modal-footer, .modal-close, .modal-search, .toast-wrap, .side-nav-card { display:none !important; }
+    .app{ display:block !important; }
+    .main{ padding:0 !important; overflow:visible !important; }
+    body{ background:#fff !important; color:#000 !important; }
+    .card{ background:#fff !important; border:1px solid #ccc !important; box-shadow:none !important; color:#000 !important; }
+    .modal-overlay{ position:static !important; background:none !important; backdrop-filter:none !important; padding:0 !important; }
+    .modal-box, .modal-box-wide{ width:100% !important; max-width:100% !important; max-height:none !important; border:1px solid #aaa !important; box-shadow:none !important; background:#fff !important; color:#000 !important; }
+    .modal-body{ max-height:none !important; padding:10px !important; }
+    .modal-header{ border-bottom:2px solid #333 !important; }
+    .modal-title{ color:#000 !important; }
+    table{ width:100% !important; border-collapse:collapse !important; color:#000 !important; }
+    th, td{ border:1px solid #ccc !important; color:#000 !important; padding:6px !important; }
+    th{ background:#f3f3f3 !important; }
+    .stat-value, .summary-total{ color:#000 !important; font-weight:800 !important; }
+    .badge{ border:1px solid #888 !important; color:#000 !important; background:#f0f0f0 !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .ticker{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker" id="ticker">در حال بارگذاری نرخ طلا...</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <svg viewBox="0 0 40 40" fill="none">
+          <rect x="4" y="14" width="32" height="18" rx="2" fill="url(#g1)" stroke="#241c05" stroke-width="1"/>
+          <rect x="8" y="10" width="24" height="6" rx="1.5" fill="url(#g2)"/>
+          <defs>
+            <linearGradient id="g1" x1="4" y1="14" x2="36" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#f0cf72"/><stop offset="1" stop-color="#8a742e"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="8" y1="10" x2="32" y2="16" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#f7dd93"/><stop offset="1" stop-color="#c9a227"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="brand-info">
+          <div class="brand-name">کوشا</div>
+          <div class="brand-sub">حسابداری طلا و جواهر</div>
+        </div>
+      </div>
+      <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" onclick="toggleSidebarCollapse()" title="کوچک‌سازی منو" aria-label="جمع یا باز کردن منو">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+    <div class="nav-item active" data-view="dashboard" title="داشبورد">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      <span class="nav-label">داشبورد</span>
+    </div>
+    <div class="nav-item has-sub" data-view="invoice" title="فاکتورها (فروش، خرید، تعویض)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M9 12h6M9 16h6M9 8h3"/></svg>
+      <span class="nav-label">فاکتور</span>
+      <span class="nav-sub-arrow">‹</span>
+    </div>
+    <div class="nav-item has-sub" data-view="customers" title="اشخاص و طرف‌حساب‌ها">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"/><circle cx="17.5" cy="7.5" r="2.4"/><path d="M15.8 13.7c2.9.4 4.9 2.6 4.9 5.8"/></svg>
+      <span class="nav-label">اشخاص</span>
+      <span class="nav-sub-arrow">‹</span>
+    </div>
+    <div class="nav-item has-sub" data-view="finance" title="مالی و خزانه‌داری">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 11h18"/><circle cx="8" cy="15.5" r="1.4" fill="currentColor" stroke="none"/><path d="M8 3.5 12 7l4-3.5"/></svg>
+      <span class="nav-label">مالی</span>
+      <span class="nav-sub-arrow">‹</span>
+    </div>
+    <div class="nav-item has-sub" data-view="expenses" title="هزینه و درآمد">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><circle cx="12" cy="12" r="10"/></svg>
+      <span class="nav-label">هزینه و درآمد</span>
+      <span class="nav-sub-arrow">‹</span>
+    </div>
+    <div class="nav-item" data-view="inventory" title="کاردکس کالا و انبار">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 7l9 5 9-5-9-5z"/><path d="M3 7v10l9 5 9-5V7"/><path d="M12 12v10"/></svg>
+      <span class="nav-label">کاردکس کالا</span>
+    </div>
+    <div class="nav-item has-sub" data-view="vouchers" title="لیست اسناد حسابداری">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span class="nav-label">لیست اسناد</span>
+      <span class="nav-sub-arrow">‹</span>
+    </div>
+    <div class="nav-item" data-view="reports" title="گزارش‌ها">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+      <span class="nav-label">گزارش‌ها</span>
+    </div>
+    <div class="nav-item has-sub" data-view="baseinfo" title="اطلاعات پایه">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V6a2 2 0 0 1 2-2h9l5 5v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14 4v5h5"/><path d="M8 13h8M8 17h5"/></svg>
+      <span class="nav-label">اطلاعات پایه</span>
+      <span class="nav-sub-arrow">‹</span>
+    </div>
+    <div class="nav-item" data-view="settings" title="تنظیمات و نرخ روز">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.7 7.7 0 0 0 0-2l2-1.5-2-3.4-2.3.9a7.6 7.6 0 0 0-1.7-1L15 3h-6l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.3-.9-2 3.4L4.6 11a7.7 7.7 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9c.5.4 1.1.8 1.7 1L9 21h6l.4-2.6c.6-.2 1.2-.6 1.7-1l2.3.9 2-3.4-2-1.5z"/></svg>
+      <span class="nav-label">تنظیمات و نرخ</span>
+    </div>
+    <div class="nav-item" data-view="sync" title="همگام‌سازی">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+      <span class="nav-label">همگام‌سازی</span>
+    </div>
+
+    <div class="sidebar-foot">
+      نسخه آفلاین<br>
+      ذخیره محلی
+    </div>
+  </aside>
+
+  <!-- POPUP FLYOUT SUBMENU CONTAINER (CLEAN & MINIMAL) -->
+  <div id="nav-flyout-popover" class="nav-flyout-popover" style="display:none;" role="menu" aria-label="منوی گزینه‌های اصلی">
+    <div class="nav-flyout-items" id="nav-flyout-items"></div>
+  </div>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <div class="page-head">
+        <div>
+          <div class="page-title">داشبورد</div>
+          <div class="page-desc">خلاصه‌ی وضعیت فروشگاه — این نسخه به‌صورت کامل آفلاین کار می‌کند</div>
+        </div>
+        <button class="btn btn-gold" onclick="newInvoice()">+ فاکتور جدید</button>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="stat-label">تعداد اشخاص</div>
+          <div class="stat-value" id="stat-customers">۰</div>
+          <div class="stat-sub">ثبت‌شده در این دستگاه</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">تعداد کالاهای تعریف‌شده</div>
+          <div class="stat-value" id="stat-inventory">۰</div>
+          <div class="stat-sub" id="stat-inventory-count">در کاتالوگ انبار</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">فروش امروز</div>
+          <div class="stat-value" id="stat-today">۰ ریال</div>
+          <div class="stat-sub" id="stat-today-count">۰ فاکتور</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">در انتظار همگام‌سازی</div>
+          <div class="stat-value" id="stat-pending">۰</div>
+          <div class="stat-sub">رکورد ارسال‌نشده به سرور</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div style="font-weight:700; margin-bottom:12px; font-size:14px;">آخرین فاکتورها</div>
+          <table id="recent-invoices-table">
+            <thead><tr><th>شماره</th><th>شخص</th><th>نوع</th><th>مبلغ</th><th>تاریخ</th><th>وضعیت</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <div class="empty" id="recent-empty">هنوز فاکتوری ثبت نشده — از منو «فاکتور جدید» را بزنید</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:700; margin-bottom:12px; font-size:14px;">نرخ طلای امروز</div>
+          <div class="field">
+            <label>قیمت هر گرم طلای ۱۸ عیار (ریال)</label>
+            <div style="font-size:22px; font-weight:800; color:var(--gold-bright);" id="dash-gold-price">—</div>
+          </div>
+          <div class="stat-sub" id="dash-gold-price-time">—</div>
+          <div class="stat-sub">برای تغییر نرخ به «تنظیمات و نرخ روز» بروید</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BASE INFO -->
+    <section class="view" id="view-baseinfo">
+      <div class="page-head">
+        <div>
+          <div class="page-title">اطلاعات پایه</div>
+          <div class="page-desc">تنظیمات پایه‌ی سیستم — افتتاحیه‌ی دوره مالی و کدبندی دفاتر (کل و معین)</div>
+        </div>
+      </div>
+
+      <div class="tab-row" style="margin-bottom:16px;">
+        <button class="tab-btn active" data-basetab="opening" onclick="switchBaseInfoTab('opening')">📅 دوره مالی و افتتاحیه</button>
+        <button class="tab-btn" data-basetab="coding" onclick="switchBaseInfoTab('coding')">🗂️ کدبندی دفاتر (کل و معین)</button>
+      </div>
+
+      <!-- OPENING BALANCES -->
+      <div class="finance-subview active" id="basetab-opening">
+            <div class="card" style="margin-bottom:16px; max-width:420px;">
+              <div class="field">
+                <label>تاریخ شروع دوره مالی</label>
+                <input id="fiscal-year-start" type="date" onchange="saveFiscalYearStart()">
+              </div>
+              <div class="stat-sub">مانده‌های زیر، مانده‌ی ابتدای دوره (افتتاحیه) هر شخص و حساب هستند — تغییرات به‌محض خروج از هر فیلد ذخیره می‌شود.</div>
+            </div>
+
+            <div class="card" style="margin-bottom:16px;">
+              <div style="font-weight:700; margin-bottom:12px; font-size:14px;">مانده افتتاحیه اشخاص</div>
+              <table>
+                <thead><tr><th style="width:85px;">کد حساب</th><th>نام شخص</th><th>مانده ریالی افتتاحیه (مثبت: طلب ما، منفی: بدهی ما)</th><th>مانده گرمی افتتاحیه (۱۸ عیار)</th></tr></thead>
+                <tbody id="opening-customers-table"></tbody>
+              </table>
+              <div class="empty" id="opening-customers-empty">هنوز شخصی ثبت نشده — اول از «اشخاص» شخص اضافه کنید</div>
+            </div>
+
+            <div class="card">
+              <div style="font-weight:700; margin-bottom:12px; font-size:14px;">مانده افتتاحیه حساب‌های بانک و صندوق</div>
+              <table>
+                <thead><tr><th style="width:85px;">کد حساب</th><th>نام حساب</th><th>نوع</th><th>مانده افتتاحیه (ریال)</th></tr></thead>
+                <tbody id="opening-accounts-table"></tbody>
+              </table>
+              <div class="empty" id="opening-accounts-empty">هنوز حسابی ثبت نشده — اول از «مالی» یک حساب اضافه کنید</div>
+            </div>
+          </div>
+
+          <!-- BOOKS CODING (کل / معین) -->
+          <div class="finance-subview" id="basetab-coding">
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                  <div style="font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px;">
+                    <span>ساختار و کدینگ حساب‌ها (درخت دفاتر کل و معین)</span>
+                    <span class="badge" style="background:rgba(59,130,246,0.15); color:#60a5fa; font-size:11px;">🛡️ استاندارد ترازنامه</span>
+                  </div>
+                  <div class="stat-sub" style="margin-top:4px;">سرفصل‌های ترازنامه و حساب‌های کل قفل و حفاظت‌شده هستند — تعریف دسته‌بندی و تفصیلی در سرفصل‌های مجاز معین مجاز است</div>
+                </div>
+                <button class="btn btn-gold" onclick="openCoaBrowser()">+ مرور و افزودن دسته‌بندی</button>
+              </div>
+
+              <div style="margin-top:12px; background:rgba(217,119,6,0.06); border:1px solid var(--gold-dim); border-radius:8px; padding:10px 14px; font-size:11.5px; line-height:1.6; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                <div style="color:var(--text-dim);">
+                  <strong style="color:var(--gold-bright);">راهنمای ساختار دفاتر:</strong>
+                  سرفصل‌های ترازنامه‌ای و کل (مانند دارایی‌های جاری <code>1.01</code>، بدهی‌های جاری <code>2.01</code>، حقوق مالکانه و نقد و بانک) جهت استخراج خودکار ترازنامه استاندارد قفل می‌باشند. می‌توانید زیر حساب‌های معین مجاز (مانند اشخاص، کاردکس کالا، هزینه‌ها، دارایی ثابت) دسته‌بندی جدید اضافه کنید.
+                </div>
+              </div>
+
+              <div id="account-tree" style="margin-top:12px;"></div>
+            </div>
+          </div>
+    </section>
+
+    <!-- INVOICE -->
+    <section class="view" id="view-invoice">
+      <div class="page-head" style="align-items:center;">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div class="page-title" id="inv-page-title">فاکتور فروش طلا</div>
+            <span id="inv-mode-badge" class="badge" style="background:rgba(201,162,39,0.15); color:var(--gold-bright); font-size:12px; padding:3px 10px; font-weight:700;">✨ فروش</span>
+          </div>
+          <div class="page-desc" id="inv-page-desc">اجرت، سود و مالیات طبق ماده ۲۶ قانون مالیات بر ارزش افزوده (معافیت اصل طلا) محاسبه می‌شود</div>
+        </div>
+      </div>
+      <div id="inv-edit-notice" class="pill" style="display:none; margin-bottom:14px; border-color:var(--gold-dim); color:var(--gold-bright);"></div>
+
+      <div class="invoice-full-layout" style="width:100%;">
+        <div class="card" style="margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <div style="font-weight:700; font-size:13.5px; color:var(--text-dim);">مشخصات و شماره‌گذاری سند</div>
+            <div>
+              <span class="badge" style="background:rgba(201,162,39,0.12); color:var(--gold-bright); font-size:11.5px; padding:4px 10px; font-weight:700;">
+                شماره ثابت سیستم: <span id="inv-perm-id-display">تخصیص خودکار</span> <span style="font-size:10px; opacity:0.8;">(غیرقابل ویرایش 🔒)</span>
+              </span>
+            </div>
+          </div>
+          <div class="row3">
+            <div class="field">
+              <label>تاریخ سند / فاکتور *</label>
+              <input id="inv-date" type="date">
+            </div>
+            <div class="field">
+              <label>شماره سند (قابل ویرایش، بدون تکرار) *</label>
+              <input id="inv-doc-num" type="number" min="2" placeholder="مثلاً: ۲" style="font-weight:800; color:var(--gold-bright);">
+            </div>
+            <div class="field">
+              <label>شماره فاکتور *</label>
+              <input id="inv-num" type="number" min="1" placeholder="مثلاً: ۱" style="font-weight:800;">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row2" style="margin-bottom:16px;">
+            <div class="field">
+              <label>شخص (طرف حساب)</label>
+              <div style="display:flex; gap:6px;">
+                <input type="hidden" id="inv-customer" value="">
+                <input id="inv-customer-display" placeholder="نام یا تلفن شخص..." autocomplete="off" style="flex:1;">
+                <button type="button" class="btn btn-sm" onclick="openCustomerModal(document.getElementById('inv-customer-display').value, 'invoice')">🔍 انتخاب</button>
+              </div>
+            </div>
+            <div class="field" style="display:none;">
+              <label>نوع معامله</label>
+              <select id="inv-type" onchange="onInvoiceTypeSelectChange(this.value)">
+                <option value="sell">✨ فروش به مشتری (خروج کالا)</option>
+                <option value="buy">📥 خرید از مشتری (ورود کالا)</option>
+                <option value="exchange">🔄 تعویض طلا (فروش کالای نو + دریافت طلای کهنه)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>حسابداری فاکتور</label>
+              <select id="inv-account-mode" onchange="renderInvoiceSummary()">
+                <option value="rial" selected>تسویه ریالی (مبلغ به حساب ریالی شخص منظور شود)</option>
+                <option value="gold">حساب وزنی / طلایی (معادل گرمی به حساب طلای شخص منظور شود)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- SECTION 1: GOODS / SALES / REGULAR ITEMS (TOP SECTION) -->
+          <div id="invoice-sales-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div style="font-weight:700; font-size:13.5px; color:var(--gold-bright); display:flex; align-items:center; gap:6px;">
+                <span id="inv-section1-title">✨ ۱. اقلام فروش به مشتری (طلای نو / کالای انتخابی)</span>
+              </div>
+              <button class="btn btn-sm btn-gold" onclick="addInvoiceLine()">+ افزودن قلم کالا</button>
+            </div>
+            <div id="invoice-lines"></div>
+          </div>
+
+          <!-- SECTION 2: SCRAP / TRADE-IN GOLD RECEIVED FROM CUSTOMER (EXCHANGE ONLY - LOWER SECTION) -->
+          <div id="invoice-exchange-buy-section" style="display:none; margin-top:20px; padding-top:16px; border-top:1.5px dashed var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div>
+                <div style="font-weight:700; font-size:13.5px; color:var(--success); display:flex; align-items:center; gap:6px;">
+                  <span>♻️ ۲. اقلام طلای کهنه و دریافتی از مشتری (خرید / تعویضی)</span>
+                </div>
+                <div class="stat-sub">طلای مستعمل، متفرقه، شکسته یا سکه دریافتی از مشتری با نرخ خرید محاسبه و از مبلغ فاکتور کسر می‌شود</div>
+              </div>
+              <button class="btn btn-sm" style="border-color:var(--success); color:var(--success);" onclick="addExchangeBuyLine()">+ افزودن طلای کهنه / دریافتی</button>
+            </div>
+            <div id="exchange-buy-lines"></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="row3">
+            <div class="field">
+              <label>توضیحات فاکتور (اختیاری)</label>
+              <input id="inv-note" placeholder="مثلاً: تسویه بخشی نقد، بخشی چک">
+            </div>
+            <div class="field">
+              <label>تخفیف کلی فاکتور (ریال)</label>
+              <input id="inv-discount" type="text" inputmode="numeric" placeholder="0" oninput="formatCurrencyInput(this); renderInvoiceSummary()">
+            </div>
+            <div class="field">
+              <label>تخفیف کلی فاکتور (%)</label>
+              <input id="inv-discount-percent" type="number" step="0.1" placeholder="0" oninput="renderInvoiceSummary()">
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div id="settlement-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div>
+                <div style="font-weight:700; font-size:13px; color:var(--text-dim);" id="settlement-title">روش تسویه و پرداخت مابه‌التفاوت فاکتور (اختیاری)</div>
+                <div class="stat-sub">مبالغ واردشده بلافاصله از مانده شخص کسر و به حساب بانک/صندوق واریز می‌شوند</div>
+              </div>
+              <button class="btn btn-sm" onclick="addSettlementLine()">+ افزودن روش پرداخت</button>
+            </div>
+            <div id="invoice-settlements"></div>
+            <div id="settlement-summary" style="margin-top:8px;"></div>
+          </div>
+          <div id="settlement-edit-notice" class="stat-sub" style="display:none; margin-bottom:10px;">روش تسویه فقط هنگام ثبت فاکتور جدید قابل تنظیم است.</div>
+
+          <button id="inv-submit-btn" class="btn btn-gold" onclick="submitInvoice()" style="width:100%; padding:12px; font-size:14px; margin-top:6px;">ثبت فاکتور</button>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div style="font-weight:700; margin-bottom:12px; font-size:14px;" id="inv-summary-box-title">ریز محاسبات، مابه‌التفاوت و پیش‌فاکتور</div>
+          <div id="invoice-summary">
+            <div class="empty">هنوز قلمی اضافه نشده</div>
+          </div>
+          <div id="inv-mode-help" class="stat-sub" style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-size:11px; line-height:1.8;">
+            در فاکتور فروش، اصل طلا طبق ماده ۲۶ از مالیات معاف بوده و اجرت، سود و مالیات ارزش‌افزوده طبق استاندارد محاسبه می‌شوند.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VOUCHERS / DOCUMENTS LIST -->
+    <section class="view" id="view-vouchers">
+      <div class="page-head">
+        <div>
+          <div class="page-title">لیست اسناد حسابداری و دفتر روزنامه</div>
+          <div class="page-desc">مشاهده، ویرایش، حذف و گزارش‌گیری جامع از تمامی اسناد ثبت‌شده (فاکتورها، هزینه‌ها، درآمدها، چک‌ها و تراکنش‌های بانکی)</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-gold" onclick="openManualJournalForm()">+ سند حسابداری دستی</button>
+          <button class="btn" onclick="go('invoice'); newInvoice();">+ فاکتور جدید</button>
+          <button class="btn" onclick="openExpenseIncomeForm('expense')">+ ثبت هزینه / درآمد</button>
+          <button class="btn btn-sm" onclick="printVouchersList()">🖨️ چاپ دفتر اسناد</button>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="grid grid-4" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="stat-label">تعداد کل اسناد ثبت‌شده</div>
+          <div class="stat-value" id="stat-vouchers-count">۰</div>
+          <div class="stat-sub" id="stat-vouchers-count-sub">شامل کلیه اسناد مالی و فاکتورها</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">جمع گردش ریالی اسناد</div>
+          <div class="stat-value" id="stat-vouchers-rial">۰ ریال</div>
+          <div class="stat-sub">مجموع گردش بدهکار / بستانکار دوره</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">جمع گردش وزنی طلا</div>
+          <div class="stat-value" id="stat-vouchers-gold" style="color:var(--gold-bright);">۰ گرم</div>
+          <div class="stat-sub">معادل طلای ۱۸ عیار</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">اسناد فاکتور خرید و فروش</div>
+          <div class="stat-value" id="stat-vouchers-invoices">۰</div>
+          <div class="stat-sub" id="stat-vouchers-invoices-sub">فاکتورهای صادر شده در سیستم</div>
+        </div>
+      </div>
+
+      <!-- FILTER & SEARCH -->
+      <div class="card" style="margin-bottom:14px; padding:14px 16px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <div style="flex:1; min-width:240px;">
+            <input id="vouchers-search" placeholder="🔍 جستجو در شماره ثابت، شماره سند، شماره فاکتور، شخص، شرح، مبلغ..." oninput="renderVouchersTable()">
+          </div>
+          <div style="min-width:160px;">
+            <select id="vouchers-filter-type" onchange="renderVouchersTable()">
+              <option value="all">همه انواع اسناد</option>
+              <option value="invoices">فقط فاکتورها (خرید و فروش)</option>
+              <option value="sell">فاکتور فروش طلا</option>
+              <option value="buy">فاکتور خرید طلا</option>
+              <option value="expenses_incomes">هزینه‌ها و درآمدها</option>
+              <option value="transactions">دریافت و پرداخت (بانک/صندوق)</option>
+              <option value="checks">اسناد چک</option>
+              <option value="manual">اسناد حسابداری دستی</option>
+            </select>
+          </div>
+          <div style="min-width:140px;">
+            <select id="vouchers-filter-range" onchange="renderVouchersTable()">
+              <option value="all">همه بازه‌ها</option>
+              <option value="today">امروز</option>
+              <option value="week">۷ روز اخیر</option>
+              <option value="month">۳۰ روز اخیر</option>
+            </select>
+          </div>
+          <div style="min-width:150px;">
+            <select id="vouchers-sort" onchange="renderVouchersTable()">
+              <option value="date-desc">تاریخ (جدید به قدیم)</option>
+              <option value="date-asc">تاریخ (قدیم به جدید)</option>
+              <option value="docnum-desc">شماره سند (نزولی)</option>
+              <option value="docnum-asc">شماره سند (صعودی)</option>
+              <option value="permnum-desc">شماره ثابت (نزولی)</option>
+              <option value="permnum-asc">شماره ثابت (صعودی)</option>
+              <option value="amount-desc">بیشترین مبلغ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="card" id="vouchers-table-card">
+        <div class="table-responsive">
+          <table id="vouchers-main-table">
+            <thead>
+              <tr>
+                <th style="width:75px; text-align:center;">شماره ثابت</th>
+                <th style="width:85px; text-align:center;">شماره سند</th>
+                <th style="width:85px; text-align:center;">شماره فاکتور</th>
+                <th style="width:90px;">تاریخ</th>
+                <th style="width:115px;">نوع سند</th>
+                <th style="width:130px;">طرف حساب</th>
+                <th>شرح و بابت سند</th>
+                <th style="width:105px;">گردش طلا (۱۸)</th>
+                <th style="width:130px;">مبلغ سند (ریال)</th>
+                <th style="width:140px; text-align:center;">عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="vouchers-table"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="vouchers-empty">هیچ سندی با مشخصات جستجو شده یافت نشد</div>
+      </div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section class="view" id="view-customers">
+      <!-- MODERN MINIMAL HEADER BAR -->
+      <div class="cust-modern-header">
+        <div class="cust-modern-title-box">
+          <div class="cust-modern-title">اشخاص و طرف‌حساب‌ها</div>
+          <div class="cust-modern-subtitle">دفاتر مالی مستقل ریالی و وزنی (۱۸ عیار)</div>
+        </div>
+
+        <div class="cust-modern-actions">
+          <button class="btn btn-gold btn-modern-primary" onclick="openNewCustomerFlow()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>شخص جدید</span>
+          </button>
+          
+          <div class="cust-actions-group">
+            <button class="btn btn-sm btn-modern-ghost" id="btn-cust-statement" onclick="openCustomerStatementAction()" title="مشاهده گردش حساب و ریز فاکتورها">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              <span>گردش حساب</span>
+            </button>
+            <button class="btn btn-sm btn-modern-ghost" id="btn-cust-edit" onclick="editSelectedCustomerAction()" title="ویرایش اطلاعات شخص">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              <span>ویرایش</span>
+            </button>
+            <button class="btn btn-sm btn-modern-danger" id="btn-cust-delete" onclick="deleteCustomerAction()" title="حذف شخص">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>حذف</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI STATS STRIP -->
+      <div class="cust-kpi-grid" id="cust-kpi-grid">
+        <div class="cust-kpi-card">
+          <div class="cust-kpi-label">تعداد کل اشخاص</div>
+          <div class="cust-kpi-val" id="kpi-cust-count">۰</div>
+          <div class="cust-kpi-sub" id="kpi-cust-sub">دفاتر مالی فعال و مستقل</div>
+        </div>
+        <div class="cust-kpi-card">
+          <div class="cust-kpi-label">مجموع تراز طلای ۱۸</div>
+          <div class="cust-kpi-val cust-kpi-gold" id="kpi-cust-gold">۰ <span class="cust-kpi-unit">گرم</span></div>
+          <div class="cust-kpi-sub" id="kpi-cust-gold-sub">مانده خالص وزنی دفاتر</div>
+        </div>
+        <div class="cust-kpi-card">
+          <div class="cust-kpi-label">مجموع تراز ریالی</div>
+          <div class="cust-kpi-val cust-kpi-toman" id="kpi-cust-toman">۰ <span class="cust-kpi-unit">ریال</span></div>
+          <div class="cust-kpi-sub" id="kpi-cust-toman-sub">مانده خالص ریالی دفاتر</div>
+        </div>
+        <div class="cust-kpi-card">
+          <div class="cust-kpi-label">وضعیت حساب‌ها</div>
+          <div class="cust-kpi-val" id="kpi-cust-status" style="font-size:14px; font-weight:700;">—</div>
+          <div class="cust-kpi-sub" id="kpi-cust-status-sub">بدهکار و بستانکار</div>
+        </div>
+      </div>
+
+      <div class="cust-table-card">
+        <!-- SLEEK FULL-WIDTH SEARCH BAR -->
+        <div class="cust-search-bar">
+          <div class="cust-search-input-wrap">
+            <svg class="cust-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="customers-search" class="cust-search-input" placeholder="جستجو بر اساس نام، تلفن، کدملی، آدرس یا توضیحات..." oninput="renderCustomers()">
+          </div>
+        </div>
+
+        <!-- MINIMAL MODERN TABLE CONTAINER -->
+        <div class="table-responsive cust-table-wrapper">
+          <table id="customers-main-table" class="cust-modern-table">
+            <thead id="customers-thead"></thead>
+            <tbody id="customers-table"></tbody>
+          </table>
+        </div>
+        <div class="empty cust-empty-state" id="customers-empty">هنوز شخصی ثبت نشده</div>
+      </div>
+    </section>
+
+    <!-- INVENTORY -->
+    <section class="view" id="view-inventory">
+      <!-- MODERN MINIMAL HEADER BAR -->
+      <div class="cust-modern-header">
+        <div class="cust-modern-title-box">
+          <div class="cust-modern-title">کاردکس کالا و انبار</div>
+          <div class="cust-modern-subtitle">کاتالوگ و موجودی کالاهای طلا و جواهر — گردش وزنی و ریالی</div>
+        </div>
+
+        <div class="cust-modern-actions">
+          <button class="btn btn-gold btn-modern-primary" onclick="openItemForm()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>کالای جدید</span>
+          </button>
+          
+          <div class="cust-actions-group">
+            <button class="btn btn-sm btn-modern-ghost" id="btn-item-statement" onclick="openItemStatementAction()" title="مشاهده گردش حساب و کاردکس کالا">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              <span>گردش کالا</span>
+            </button>
+            <button class="btn btn-sm btn-modern-ghost" id="btn-item-edit" onclick="editSelectedItemAction()" title="ویرایش اطلاعات کالا">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              <span>ویرایش</span>
+            </button>
+            <button class="btn btn-sm btn-modern-danger" id="btn-item-delete" onclick="deleteItemAction()" title="حذف کالا">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>حذف</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI STATS STRIP -->
+      <div class="cust-kpi-grid" id="inv-kpi-grid">
+        <div class="cust-kpi-card">
+          <div class="cust-kpi-label">تنوع کل اقلام</div>
+          <div class="cust-kpi-val" id="kpi-inv-count">۰</div>
+          <div class="cust-kpi-sub">کالاهای ثبت‌شده در کاردکس</div>
+        </div>
+        <div class="cust-kpi-card">
+          <div class="cust-kpi-label">اقلام بارکددار</div>
+          <div class="cust-kpi-val cust-kpi-gold" id="kpi-inv-barcode">۰</div>
+          <div class="cust-kpi-sub">دارای کد ردیابی اختصاصی</div>
+        </div>
+        <div class="cust-kpi-card">
+          <div class="cust-kpi-label">معاف از مالیات</div>
+          <div class="cust-kpi-val" id="kpi-inv-tax" style="color:var(--success);">۰</div>
+          <div class="cust-kpi-sub">ماده ۲۶ قانون پایانه‌ها</div>
+        </div>
+        <div class="cust-kpi-card">
+          <div class="cust-kpi-label">میانگین اجرت ساخت</div>
+          <div class="cust-kpi-val" id="kpi-inv-wage" style="color:#38bdf8;">۰٪</div>
+          <div class="cust-kpi-sub">نرخ متوسط اجرت کاتالوگ</div>
+        </div>
+      </div>
+
+      <div class="cust-table-card">
+        <!-- SLEEK FULL-WIDTH SEARCH BAR WITH COLUMN SELECTOR -->
+        <div class="cust-search-bar" style="display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div class="cust-search-input-wrap" style="flex:1; min-width:220px;">
+            <svg class="cust-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="inventory-search" class="cust-search-input" placeholder="جستجو بر اساس نام، بارکد، مشخصات یا عیار..." oninput="renderInventory()">
+          </div>
+          <div style="position:relative;">
+            <button class="btn btn-sm btn-modern-ghost" onclick="toggleColumnsPanel(event)" title="انتخاب و نمایش ستون‌های دلخواه جدول">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <span>ستون‌ها ⚙</span>
+            </button>
+            <div id="inventory-columns-panel" class="columns-panel" style="display:none; left:0; right:auto;">
+              <label class="columns-panel-item"><input type="checkbox" id="col-karat" onchange="toggleColumn('karat', this.checked)"> عیار</label>
+              <label class="columns-panel-item"><input type="checkbox" id="col-wage" onchange="toggleColumn('wage', this.checked)"> اجرت</label>
+              <label class="columns-panel-item"><input type="checkbox" id="col-barcode" onchange="toggleColumn('barcode', this.checked)"> بارکد (ستون جدا)</label>
+              <label class="columns-panel-item"><input type="checkbox" id="col-description" onchange="toggleColumn('description', this.checked)"> مشخصات</label>
+              <label class="columns-panel-item"><input type="checkbox" id="col-tax" onchange="toggleColumn('tax', this.checked)"> مالیات</label>
+              <label class="columns-panel-item"><input type="checkbox" id="col-status" onchange="toggleColumn('status', this.checked)"> وضعیت</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- MINIMAL MODERN TABLE CONTAINER -->
+        <div class="table-responsive cust-table-wrapper">
+          <table id="inventory-main-table" class="cust-modern-table">
+            <thead id="inventory-thead"></thead>
+            <tbody id="inventory-table"></tbody>
+          </table>
+        </div>
+        <div class="empty cust-empty-state" id="inventory-empty">هنوز کالایی ثبت نشده</div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="view" id="view-reports">
+      <div class="page-head">
+        <div>
+          <div class="page-title">گزارش‌ها</div>
+          <div class="page-desc">جمع فروش، خرید، سود و مالیات بر اساس بازه‌ی زمانی</div>
+        </div>
+        <select id="report-range" style="width:160px;" onchange="renderReports()">
+          <option value="today">امروز</option>
+          <option value="week">۷ روز اخیر</option>
+          <option value="month">۳۰ روز اخیر</option>
+          <option value="all" selected>همه‌ی زمان‌ها</option>
+        </select>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="stat-label">تعداد فاکتور</div>
+          <div class="stat-value" id="rep-count">۰</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">جمع فروش (خالص)</div>
+          <div class="stat-value" id="rep-sales">۰ ریال</div>
+          <div class="stat-sub" id="rep-sales-sub">فروش منهای خرید</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">جمع سود</div>
+          <div class="stat-value" id="rep-profit">۰ ریال</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">جمع مالیات وصول‌شده</div>
+          <div class="stat-value" id="rep-tax">۰ ریال</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div class="stat-sub">وزن خالص طلای خروجی از فروشگاه (فروش منهای خرید)</div>
+          <div style="font-weight:800; color:var(--gold-bright);" id="rep-weight">۰ گرم</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:700; margin-bottom:12px; font-size:14px;">لیست فاکتورها</div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>شماره</th><th>شخص</th><th>نوع</th><th>وزن</th><th>مبلغ</th><th>تاریخ</th><th>وضعیت</th><th></th></tr></thead>
+            <tbody id="reports-table"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="reports-empty">فاکتوری در این بازه یافت نشد</div>
+      </div>
+    </section>
+
+    <!-- FINANCE -->
+    <section class="view" id="view-finance">
+      <div class="page-head">
+        <div>
+          <div class="page-title" id="finance-main-title">حساب‌ها و صندوق‌ها (نقد و بانک)</div>
+          <div class="page-desc" id="finance-main-desc">موجودی و گردش حساب‌های بانکی و صندوق‌های فروشگاه</div>
+        </div>
+      </div>
+
+      <div style="width:100%;">
+        <!-- ACCOUNTS -->
+        <div class="finance-subview active" id="fintab-accounts">
+          <div class="page-head" style="margin-bottom:14px;">
+            <div class="page-desc">موجودی هر حساب از مانده اولیه + تراکنش‌های واریز و پرداخت محاسبه می‌شود</div>
+            <button class="btn btn-gold" onclick="openAccountForm()">+ حساب جدید</button>
+          </div>
+
+          <div class="grid grid-3" style="margin-bottom:16px;">
+            <div class="card">
+              <div class="stat-label">جمع موجودی بانک‌ها</div>
+              <div class="stat-value" id="stat-bank-total">۰ ریال</div>
+            </div>
+            <div class="card">
+              <div class="stat-label">جمع موجودی صندوق‌ها</div>
+              <div class="stat-value" id="stat-cash-total">۰ ریال</div>
+            </div>
+            <div class="card">
+              <div class="stat-label">جمع کل نقد و بانک</div>
+              <div class="stat-value" id="stat-finance-total">۰ ریال</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="table-responsive">
+              <table>
+                <thead><tr><th style="width:85px;">کد حساب</th><th>نام حساب</th><th>نوع</th><th>بانک / شماره</th><th>موجودی فعلی</th><th>وضعیت</th><th></th></tr></thead>
+                <tbody id="accounts-table"></tbody>
+              </table>
+            </div>
+            <div class="empty" id="accounts-empty">هنوز حسابی ثبت نشده</div>
+          </div>
+        </div>
+
+        <!-- CHECKS -->
+        <div class="finance-subview" id="fintab-checks">
+          <div class="page-head" style="margin-bottom:14px;">
+            <div class="page-desc">چک‌های دریافتی از اشخاص و چک‌های پرداختی به اشخاص</div>
+            <button class="btn btn-gold" onclick="openCheckForm()">+ چک جدید</button>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table>
+                <thead><tr><th>شماره چک</th><th>نوع</th><th>بانک</th><th>سررسید</th><th>مبلغ</th><th>طرف حساب</th><th>وضعیت</th><th></th></tr></thead>
+                <tbody id="checks-table"></tbody>
+              </table>
+            </div>
+            <div class="empty" id="checks-empty">هنوز چکی ثبت نشده</div>
+          </div>
+        </div>
+
+        <!-- TRANSACTIONS -->
+        <div class="finance-subview" id="fintab-transactions">
+          <div class="page-head" style="margin-bottom:14px;">
+            <div class="page-desc">دریافت و پرداخت‌های نقدی، بانکی و چکی — مانده‌حساب شخص مرتبط بلافاصله تعدیل می‌شود</div>
+            <button class="btn btn-gold" onclick="openTxnForm()">+ تراکنش جدید</button>
+          </div>
+          <div class="card">
+            <div class="table-responsive">
+              <table>
+                <thead><tr><th>تاریخ</th><th>نوع</th><th>روش</th><th>حساب / چک</th><th>مبلغ</th><th>شخص</th><th>فاکتور مرتبط</th><th>توضیحات</th></tr></thead>
+                <tbody id="transactions-table"></tbody>
+              </table>
+            </div>
+            <div class="empty" id="transactions-empty">هنوز تراکنشی ثبت نشده</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPENSES & INCOMES -->
+    <section class="view" id="view-expenses">
+      <div class="page-head">
+        <div>
+          <div class="page-title" id="exp-main-title">هزینه‌های فروشگاه</div>
+          <div class="page-desc" id="exp-main-desc">ثبت و مدیریت انواع هزینه‌های جاری و ملزومات فروشگاه</div>
+        </div>
+        <div id="exp-header-actions" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button class="btn btn-gold" onclick="openExpenseIncomeForm('expense')">+ ثبت هزینه</button>
+        </div>
+      </div>
+
+      <!-- SUB-NAVIGATION: DOCUMENTS vs ACCOUNTS -->
+      <div class="exp-subtabs-wrap" style="display:flex; gap:6px; margin-bottom:14px;">
+        <button id="exp-subtab-btn-list" class="btn btn-sm btn-ghost-pill active" onclick="setExpenseSubView('list')">📋 اسناد هزینه</button>
+        <button id="exp-subtab-btn-accounts" class="btn btn-sm btn-ghost-pill" onclick="setExpenseSubView('accounts')">🏛️ حساب‌های هزینه</button>
+      </div>
+
+      <!-- SUBVIEW: MAIN LIST -->
+      <div id="exptab-list-view">
+        <!-- COMPACT STATS (ONLY RELEVANT TO CURRENT TAB) -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:14px;">
+          <div class="card stat-card-compact">
+            <div class="stat-label" id="exp-stat-total-label">جمع کل هزینه‌ها (خالص)</div>
+            <div class="stat-value" id="stat-exp-total" style="color:#f28b82;">۰ ریال</div>
+            <div class="stat-sub" id="stat-exp-sub">مجموع هزینه‌های ثبت‌شده</div>
+          </div>
+          <div class="card stat-card-compact">
+            <div class="stat-label" id="exp-stat-count-label">تعداد اسناد ثبت‌شده</div>
+            <div class="stat-value" id="stat-expinc-count">۰</div>
+            <div class="stat-sub" id="stat-expinc-count-sub">در سیستم مالی</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px; padding:10px 14px;">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <div style="flex:1; min-width:200px;">
+              <input id="expinc-search" placeholder="🔍 جستجو در عنوان، طرف حساب، سرفصل، شماره سند یا فیش..." oninput="renderExpensesIncomesTable()" style="height:36px; font-size:12.5px;">
+            </div>
+            <div style="min-width:180px;">
+              <select id="expinc-filter-category" onchange="onExpenseCategoryFilterChange(this.value)" style="height:36px; font-size:12.5px;">
+                <option value="all">همه سرفصل‌ها</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:75px; text-align:center;">شماره سند</th>
+                  <th style="width:90px; text-align:center;">تاریخ</th>
+                  <th style="width:90px; text-align:center;">نوع عملیات</th>
+                  <th>سرفصل و شرح سند</th>
+                  <th>طرف حساب</th>
+                  <th>روش و حساب تسویه</th>
+                  <th>مبلغ (ریال)</th>
+                  <th style="width:110px;">کد پیگیری</th>
+                  <th style="width:140px; text-align:center;">عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="expenses-table"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="expenses-empty">هیچ سندی با این مشخصات یافت نشد</div>
+        </div>
+      </div>
+
+      <!-- SUBVIEW: ONLY ACCOUNTS FOR CURRENT TAB -->
+      <div id="exptab-categories-view" style="display:none;">
+        <div class="card" id="exp-single-category-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+            <div>
+              <div id="exp-category-view-title" style="font-weight:700; color:var(--text); font-size:14px;">سرفصل‌ها و حساب‌های هزینه</div>
+              <div id="exp-category-view-desc" style="font-size:12px; color:var(--text-dim); margin-top:2px;">حساب‌های معین استاندارد جهت تفکیک مخارج فروشگاه</div>
+            </div>
+            <button id="exp-category-add-btn" class="btn btn-sm btn-gold" onclick="promptAddCurrentCategory()">+ افزودن حساب جدید</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:90px; text-align:center;">کد حساب</th>
+                  <th>عنوان سرفصل و ماهیت حسابداری</th>
+                  <th style="width:120px; text-align:center;">تعداد اسناد</th>
+                  <th style="width:150px;">مجموع گردش</th>
+                  <th style="width:85px; text-align:center;">عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="single-category-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div class="page-head">
+        <div>
+          <div class="page-title">تنظیمات و نرخ روز</div>
+          <div class="page-desc">این نرخ‌ها پایه‌ی محاسبه‌ی همه‌ی فاکتورهای جدید هستند</div>
+        </div>
+      </div>
+      <div class="card" style="max-width:520px;">
+        <div class="field">
+          <label>قیمت هر گرم طلای ۱۸ عیار (ریال)</label>
+          <input id="set-price18" type="text" inputmode="numeric" placeholder="مثلاً 42,000,000" oninput="formatCurrencyInput(this)">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>درصد سود پیش‌فرض (%)</label>
+            <input id="set-profit" type="number" step="0.1" placeholder="7">
+          </div>
+          <div class="field">
+            <label>درصد مالیات بر ارزش‌افزوده (%)</label>
+            <input id="set-tax" type="number" step="0.1" placeholder="10">
+          </div>
+        </div>
+        <button class="btn btn-gold" onclick="saveSettings()">ذخیره تنظیمات</button>
+        <div class="divider"></div>
+        <div class="stat-sub">
+          فرمول محاسبه استاندارد زرگری (ماده ۲۶ قانون دائمی مالیات بر ارزش افزوده):<br>
+          ۱. ارزش اصل طلا = وزن × نرخ روز × (عیار/۱۸) [معاف از مالیات]<br>
+          ۲. اجرت ساخت = درصد اجرت × ارزش اصل طلا<br>
+          ۳. سود فروشنده = درصد سود × (ارزش اصل طلا + اجرت)<br>
+          ۴. مالیات بر ارزش افزوده = ۱۰٪ فقط از مجموع (اجرت + سود) پس از اعمال تخفیف
+        </div>
+      </div>
+    </section>
+
+    <!-- SYNC -->
+    <section class="view" id="view-sync">
+      <div class="page-head">
+        <div>
+          <div class="page-title">همگام‌سازی با سرور</div>
+          <div class="page-desc">در نسخه‌ی نهایی، این بخش تمامی تغییرات (فاکتورها، اشخاص، کالاها، حساب‌ها، چک‌ها و تراکنش‌ها) را با سرور مرکزی همگام می‌کند.</div>
+        </div>
+        <button class="btn btn-gold" onclick="runSync()">همگام‌سازی الان</button>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div style="font-weight:700; margin-bottom:10px; font-size:14px;">وضعیت اتصال</div>
+          <div class="pill-row">
+            <span class="pill" id="sync-status">🔴 در انتظار همگام‌سازی</span>
+            <span class="pill" id="sync-last">آخرین بار: —</span>
+          </div>
+          <div class="stat-sub">
+            هر رکورد با شناسه‌ی یکتا (UUID) نگه‌داری می‌شود تا هم‌زمانی بین دستگاه‌ها بدون تداخل انجام شود.
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-weight:700; margin-bottom:10px; font-size:14px;">گزارش رویدادها</div>
+          <div id="sync-log"></div>
+          <div class="empty" id="sync-log-empty">هنوز رویدادی ثبت نشده</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<div id="kardex-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeKardexModal()">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-header">
+      <div class="modal-title">کاردکس کالا — انتخاب کالا</div>
+      <button class="modal-close" onclick="closeKardexModal()">✕</button>
+    </div>
+    <div class="modal-search">
+      <input id="kardex-modal-search" placeholder="جستجو بر اساس نام، بارکد، مشخصات یا عیار..." oninput="renderKardexModalList()" onkeydown="handleKardexModalKeydown(event)">
+    </div>
+    <div id="kardex-modal-list" class="modal-list"></div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" onclick="manualEntryFromModal()">کالای سفارشی (ثبت دستی نام)</button>
+    </div>
+  </div>
+</div>
+
+<div id="customer-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeCustomerModal()">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-header">
+      <div class="modal-title">اشخاص — انتخاب شخص</div>
+      <button class="modal-close" onclick="closeCustomerModal()">✕</button>
+    </div>
+    <div class="modal-search">
+      <input id="customer-modal-search" placeholder="جستجو بر اساس نام، تلفن، کد ملی یا آدرس..." oninput="renderCustomerModalList()" onkeydown="handleCustomerModalKeydown(event)">
+    </div>
+    <div id="customer-modal-list" class="modal-list"></div>
+  </div>
+</div>
+
+<div id="coa-browser-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeCoaBrowser()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">افزودن دسته‌بندی</div>
+      <button class="modal-close" onclick="closeCoaBrowser()">✕</button>
+    </div>
+    <div style="padding:12px 18px 0; display:flex; align-items:center; gap:8px;">
+      <button class="btn btn-sm" id="coa-browser-back" onclick="coaBrowserGoBack()" style="display:none;">‹ بازگشت</button>
+      <div id="coa-browser-breadcrumb" class="stat-sub" style="flex:1;"></div>
+    </div>
+    <div id="coa-browser-list" class="modal-list"></div>
+    <div id="coa-browser-form" style="display:none; padding:12px 18px 16px; border-top:1px solid var(--border);">
+      <div style="display:flex; gap:8px;">
+        <input id="coa-browser-new-name" placeholder="نام دسته‌بندی جدید" style="flex:1;" onkeydown="if(event.key==='Enter') coaBrowserSaveCategory()">
+        <button class="btn btn-gold btn-sm" onclick="coaBrowserSaveCategory()">افزودن</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="voucher-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeVoucherModal()">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-header">
+      <div class="modal-title" id="voucher-modal-title">🧾 سند حسابداری رسمی</div>
+      <button class="modal-close" onclick="closeVoucherModal()">✕</button>
+    </div>
+    <div id="voucher-modal-body" class="modal-body" style="padding:20px; font-size:13px;"></div>
+    <div class="modal-footer" style="display:flex; justify-content:space-between;">
+      <button class="btn btn-sm" onclick="closeVoucherModal()">بستن</button>
+      <button class="btn btn-gold btn-sm" onclick="printVoucher()">🖨️ چاپ سند رسمی</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT MANUAL JOURNAL ENTRY -->
+<div id="manual-voucher-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeManualJournalForm()">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-header">
+      <div class="modal-title" id="manual-voucher-title">⚖️ ثبت سند حسابداری دستی (دوطرفه طلا و ریال)</div>
+      <button class="modal-close" onclick="closeManualJournalForm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="row3">
+        <div class="field">
+          <label>شماره سند (قابل ویرایش، بدون تکرار) *</label>
+          <input id="manual-doc-num" type="number" min="2" style="color:var(--gold-bright); font-weight:800;" placeholder="مثلاً: ۲">
+        </div>
+        <div class="field">
+          <label>شماره ثابت سیستم (غیرقابل ویرایش 🔒)</label>
+          <input id="manual-doc-perm" type="text" readonly disabled style="background:rgba(255,255,255,0.03); color:var(--text-faint); font-weight:700;" value="تخصیص خودکار">
+        </div>
+        <div class="field">
+          <label>تاریخ سند *</label>
+          <input id="manual-doc-date" type="date">
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field">
+          <label>شماره پیگیری / مرجع (اختیاری)</label>
+          <input id="manual-doc-ref" placeholder="مثلاً: حواله 123 یا شماره فاکتور">
+        </div>
+        <div class="field" style="grid-column: span 2;">
+          <label>شخص مرتبط (طرف حساب اختیاری)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="hidden" id="manual-doc-customer" value="">
+            <input id="manual-doc-customer-display" placeholder="جستجوی شخص یا مشتری..." style="flex:1;">
+            <button type="button" class="btn btn-sm" onclick="openCustomerModal(document.getElementById('manual-doc-customer-display').value, 'manual')">🔍 انتخاب</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>سرفصل / حساب بدهکار (گیرنده وجه یا طلا) *</label>
+          <select id="manual-debit-account"></select>
+        </div>
+        <div class="field">
+          <label>سرفصل / حساب بستانکار (دهنده وجه یا طلا) *</label>
+          <select id="manual-credit-account"></select>
+        </div>
+      </div>
+
+      <div class="row3">
+        <div class="field">
+          <label>مبلغ گردش ریالی (ریال)</label>
+          <input id="manual-doc-amount" type="text" inputmode="numeric" placeholder="0" oninput="formatCurrencyInput(this)">
+        </div>
+        <div class="field">
+          <label>گردش وزنی طلای ۱۸ عیار (گرم)</label>
+          <input id="manual-doc-gold" type="number" step="0.001" placeholder="0.000">
+        </div>
+        <div class="field">
+          <label>شخص مرتبط (طرف حساب اختیاری)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="hidden" id="manual-doc-customer" value="">
+            <input id="manual-doc-customer-display" placeholder="جستجوی شخص..." style="flex:1;">
+            <button type="button" class="btn btn-sm" onclick="openCustomerModal(document.getElementById('manual-doc-customer-display').value, 'manual')">🔍</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>شرح و بابت سند *</label>
+        <input id="manual-doc-desc" placeholder="مثلاً: انتقال وجه بین حساب‌ها، تسویه مانده طلایی، تعدیل حساب و...">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" onclick="closeManualJournalForm()">انصراف</button>
+      <button id="manual-doc-save-btn" class="btn btn-gold btn-sm" onclick="saveManualJournal()">ذخیره سند حسابداری</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PICK / CREATE CUSTOMER CATEGORY -->
+<div id="customer-cat-picker-modal" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeCustCategoryPicker()">
+  <div class="cust-modal-box" style="max-width:580px; width:95vw;">
+    <div class="cust-modal-head">
+      <div class="cust-modal-title-wrap">
+        <div class="cust-modal-title" id="cust-picker-modal-title">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gold);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          <span>دسته‌بندی‌ها و سرفصل‌های اشخاص</span>
+        </div>
+        <div class="cust-modal-subtitle">انتخاب سرفصل معین یا افزودن دسته جدید در دفاتر</div>
+      </div>
+      <button class="cust-modal-close-btn" onclick="closeCustCategoryPicker()" title="بستن">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <div class="cust-modal-body-scroll" style="padding:18px 22px;">
+      <div style="font-size:12.5px; color:var(--text-dim); line-height:1.5;" id="cust-picker-prompt">
+        لطفاً دسته یا سرفصل معین موردنظر را از لیست زیر انتخاب فرمایید:
+      </div>
+
+      <!-- CATEGORIES LIST -->
+      <div id="cust-picker-category-list" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto; padding:2px;">
+      </div>
+
+      <!-- INLINE CREATE NEW CATEGORY -->
+      <div style="background:rgba(201,162,39,0.06); border:1px dashed rgba(201,162,39,0.3); border-radius:10px; padding:12px 14px;">
+        <div style="font-size:11.5px; font-weight:700; color:var(--gold-bright); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span>افزودن دسته‌بندی جدید در این گروه</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <input id="quick-cat-name-input" class="cust-input-control" placeholder="نام دسته جدید (مثلاً: بنکداران، همکاران، مشتریان VIP)..." style="flex:1; height:38px; font-size:12.5px;" onkeydown="if(event.key==='Enter') saveNewCategoryFromPicker()">
+          <button type="button" class="btn btn-gold btn-sm" style="padding:6px 14px; font-weight:700; white-space:nowrap;" onclick="saveNewCategoryFromPicker()">+ ثبت دسته</button>
+        </div>
+      </div>
+
+      <!-- CODING INFO & LINK -->
+      <div style="background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:9px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div style="font-size:11px; color:var(--text-faint); line-height:1.5;">
+          جهت حذف سرفصل‌ها یا مدیریت کل درخت حسابداری، از بخش کدینگ حساب‌ها استفاده نمایید.
+        </div>
+        <button type="button" class="btn-ghost-pill" onclick="closeCustCategoryPicker(); go('baseinfo'); switchBaseInfoTab('coding');" style="white-space:nowrap;">کدینگ حساب‌ها ➔</button>
+      </div>
+    </div>
+
+    <div class="cust-modal-footer">
+      <div></div>
+      <button class="btn-modern-ghost" onclick="closeCustCategoryPicker()">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT CUSTOMER -->
+<div id="customer-form-modal-overlay" class="modal-overlay" style="display:none;">
+  <div id="customer-form-modal-box" class="cust-modal-box">
+    <!-- MODERN MODAL HEADER -->
+    <div class="cust-modal-head">
+      <div class="cust-modal-title-wrap">
+        <div class="cust-modal-title" id="customer-form-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:var(--gold);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>ثبت طرف‌حساب جدید</span>
+        </div>
+        <div class="cust-modal-subtitle">اطلاعات هویتی، راه‌های تماس، حساب‌های بانکی و سقف اعتبارات مالی</div>
+      </div>
+      <div class="cust-modal-head-actions">
+        <button id="cust-modal-max-btn" class="cust-modal-action-btn" type="button" onclick="toggleCustomerFormMaximize()" title="تمام صفحه / اندازه استاندارد">
+          <svg id="cust-max-icon-expand" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+          <svg id="cust-max-icon-compress" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M4 10h6m0 0V4m0 6L3 3m17 7h-6m0 0V4m0 6l7-7"></path></svg>
+        </button>
+        <button class="cust-modal-action-btn" type="button" onclick="closeCustomerFormWithConfirm()" title="بستن فرم">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL TAB NAVIGATION -->
+    <div class="cust-form-tabs-bar" id="cust-form-tabs-container">
+      <button type="button" class="cust-form-tab-btn active" data-tab="identity" onclick="switchCustomerFormTab('identity')" title="مشخصات هویتی و ماهیت">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span>۱. هویت و ماهیت</span>
+      </button>
+      <button type="button" class="cust-form-tab-btn" data-tab="contact" onclick="switchCustomerFormTab('contact')" title="راه‌های ارتباطی و نشانی">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        <span>۲. تماس و نشانی</span>
+      </button>
+      <button type="button" class="cust-form-tab-btn" data-tab="finance" onclick="switchCustomerFormTab('finance')" title="اطلاعات مالی، بانکی و اعتبارات">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+        <span>۳. مالی و بانکی</span>
+      </button>
+      <button type="button" class="cust-form-tab-btn" data-tab="notes" onclick="switchCustomerFormTab('notes')" title="شرایط تسویه و یادداشت‌ها">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <span>۴. تسویه و یادداشت</span>
+      </button>
+      <button type="button" class="cust-form-tab-btn cust-form-tab-all-btn" data-tab="all" onclick="switchCustomerFormTab('all')" title="نمایش تمام فیلدها در یک صفحه">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        <span>همه</span>
+      </button>
+    </div>
+    
+    <!-- MODAL BODY -->
+    <div class="cust-modal-body-scroll">
+      <!-- BREADCRUMB / PATH BANNER & CODE -->
+      <div id="cust-form-path-banner" class="cust-form-path-banner" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div class="cust-path-info" style="display:flex; align-items:center; gap:8px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gold); flex-shrink:0;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          <span class="cust-path-label">سرفصل در دفاتر:</span>
+          <span id="cust-form-path-text" class="cust-path-val">اشخاص</span>
+          <button type="button" class="btn-ghost-pill" onclick="openCategoryPickerFromCustomerForm()" style="margin-right:4px;">تغییر دسته ⇄</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label for="cust-code" style="font-size:12px; font-weight:700; color:var(--gold-bright); margin-bottom:0; display:flex; align-items:center; gap:4px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="12" y2="12"></line></svg>
+            کد حساب:
+          </label>
+          <input id="cust-code" class="cust-input-control cust-input-ltr cust-input-mono cust-readonly-code" style="width:105px; height:32px; padding:2px 8px; text-align:center; font-size:12px;" placeholder="1001" readonly title="کد حساب به صورت خودکار توسط سیستم تخصیص می‌یابد">
+        </div>
+      </div>
+
+      <input type="hidden" id="cust-branch" value="main">
+      <input type="hidden" id="cust-parent-node-id" value="">
+
+      <!-- TAB PANEL 1: IDENTITY & BASIC INFO -->
+      <div id="cust-panel-identity" class="cust-tab-panel active">
+        <div class="cust-form-section">
+          <div class="cust-form-sec-head">
+            <span class="cust-form-sec-dot"></span>
+            <span class="cust-form-sec-title">مشخصات هویتی و ماهیت شخص</span>
+            <span class="cust-form-sec-tag">اطلاعات پایه</span>
+          </div>
+          
+          <div class="cust-grid-2">
+            <div class="cust-field-group" style="position:relative;" id="cust-name-field-wrap">
+              <label class="cust-field-label">نام و نام خانوادگی / عنوان <span class="cust-field-required">*</span></label>
+              <input id="cust-name" class="cust-input-control cust-input-bold" placeholder="مثلاً: علی محمدی یا طلاسازی آریا" autocomplete="off" oninput="onCustomerNameInput(this.value)" onfocus="onCustomerNameInput(this.value)" onblur="setTimeout(hideCustomerNameSuggestions, 250)">
+              <div id="cust-name-suggestions" style="display:none; position:absolute; top:calc(100% + 4px); right:0; left:0; z-index:150; background:var(--bg-card, #1c1914); border:1px solid var(--gold-dim, #d97706); border-radius:8px; box-shadow:0 12px 30px rgba(0,0,0,0.6); overflow:hidden;">
+              </div>
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">نوع شخص</label>
+              <select id="cust-person-type" class="cust-input-control" style="font-weight:600;">
+                <option value="real">شخص حقیقی</option>
+                <option value="legal">شخص حقوقی</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cust-grid-3">
+            <div class="cust-field-group">
+              <label class="cust-field-label">شغل / زمینه فعالیت</label>
+              <input id="cust-job" class="cust-input-control" placeholder="مثلاً: بنکدار، زرگر، طلاساز، کیفی">
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">کد ملی / شناسه ملی</label>
+              <input id="cust-national-id" class="cust-input-control cust-input-ltr cust-input-mono" placeholder="0012345678">
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">کد اقتصادی / شماره ثبت</label>
+              <input id="cust-economic-code" class="cust-input-control cust-input-ltr cust-input-mono" placeholder="شماره ثبت یا اقتصادی">
+            </div>
+          </div>
+
+          <div class="cust-grid-2">
+            <div class="cust-field-group">
+              <label class="cust-field-label">معرف / طرف‌حساب واسط بازار</label>
+              <input id="cust-introducer" class="cust-input-control" placeholder="نام معرف یا همکار واسطه در صورت وجود">
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">تاریخ تولد / تاریخ تأسیس</label>
+              <input id="cust-birth-date" class="cust-input-control cust-input-center cust-input-mono" placeholder="۱۳۶۵/۰۴/۱۵">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL 2: CONTACT & ADDRESS -->
+      <div id="cust-panel-contact" class="cust-tab-panel">
+        <div class="cust-form-section">
+          <div class="cust-form-sec-head">
+            <span class="cust-form-sec-dot" style="background:#60a5fa;"></span>
+            <span class="cust-form-sec-title">راه‌های ارتباطی و نشانی پستی</span>
+            <span class="cust-form-sec-tag">تماس و ارسال</span>
+          </div>
+          
+          <div class="cust-grid-3">
+            <div class="cust-field-group">
+              <label class="cust-field-label">شماره موبایل اصلی <span class="cust-field-required">*</span></label>
+              <input id="cust-phone" class="cust-input-control cust-input-ltr cust-input-bold cust-input-mono" placeholder="09xxxxxxxxx">
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">شماره همراه دوم / تلفن ثابت</label>
+              <input id="cust-phone2" class="cust-input-control cust-input-ltr cust-input-mono" placeholder="021xxxxxxxx یا همراه دوم">
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">کد پستی (۱۰ رقمی)</label>
+              <input id="cust-postal-code" class="cust-input-control cust-input-ltr cust-input-mono" placeholder="1234567890">
+            </div>
+          </div>
+
+          <div class="cust-field-group">
+            <label class="cust-field-label">نشانی کامل محل کسب، کارگاه یا سکونت</label>
+            <input id="cust-address" class="cust-input-control" placeholder="مثلاً: تهران، بازار بزرگ، سرای امید، طبقه دوم، پلاک ۱۲">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL 3: FINANCIAL & BANKING -->
+      <div id="cust-panel-finance" class="cust-tab-panel">
+        <div class="cust-form-section">
+          <div class="cust-form-sec-head">
+            <span class="cust-form-sec-dot" style="background:#c084fc;"></span>
+            <span class="cust-form-sec-title">اطلاعات مالی، بانکی و سقف اعتبارات</span>
+            <span class="cust-form-sec-tag">تنظیمات تسویه و حد اعتبار</span>
+          </div>
+          
+          <div class="cust-grid-3">
+            <div class="cust-field-group">
+              <label class="cust-field-label">سقف اعتبار ریالی (تومان)</label>
+              <input id="cust-credit-limit-toman" class="cust-input-control cust-input-bold" placeholder="مثلاً: ۵۰,۰۰۰,۰۰۰" oninput="formatCurrencyInput(this)">
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">سقف اعتبار طلایی (گرم ۱۸ عیار)</label>
+              <input id="cust-credit-limit-gold" type="number" step="any" class="cust-input-control cust-input-bold cust-input-ltr" placeholder="مثلاً: ۵۰.۰۰۰">
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">نام بانک حساب</label>
+              <input id="cust-bank-name" class="cust-input-control" placeholder="مثلاً: بانک ملت / ملی / تجارت">
+            </div>
+          </div>
+
+          <div class="cust-grid-2">
+            <div class="cust-field-group">
+              <label class="cust-field-label">شماره کارت بانکی (۱۶ رقمی)</label>
+              <input id="cust-card-number" maxlength="24" class="cust-input-control cust-input-center cust-input-mono" placeholder="xxxx-xxxx-xxxx-xxxx" style="font-size:13.5px; letter-spacing:1px;">
+            </div>
+            <div class="cust-field-group">
+              <label class="cust-field-label">شماره شبا (IBAN - با IR)</label>
+              <input id="cust-iban" class="cust-input-control cust-input-ltr cust-input-mono" placeholder="IR000000000000000000000000" style="font-size:13px; letter-spacing:0.5px;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL 4: NOTES -->
+      <div id="cust-panel-notes" class="cust-tab-panel">
+        <div class="cust-form-section">
+          <div class="cust-form-sec-head">
+            <span class="cust-form-sec-dot" style="background:#10b981;"></span>
+            <span class="cust-form-sec-title">یادداشت‌ها و شرایط تسویه خاص</span>
+            <span class="cust-form-sec-tag">توضیحات و توافقات</span>
+          </div>
+          <div class="cust-field-group">
+            <label class="cust-field-label">یادداشت و توافقات حساب</label>
+            <input id="cust-notes" class="cust-input-control" placeholder="هرگونه توافق، شرایط تسویه نقدی یا وزنی طلا، مهلت پرداخت و توضیحات تکمیلی...">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- MODERN MODAL FOOTER -->
+    <div class="cust-modal-footer">
+      <div class="cust-footer-left">
+        <button id="cust-modal-delete-btn" type="button" class="btn btn-sm btn-modern-danger" style="display:none;" onclick="deleteCustomerFromModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span>حذف این شخص</span>
+        </button>
+        <button id="cust-step-prev-btn" type="button" class="btn-ghost-pill" style="display:none;" onclick="stepCustomerFormTab(-1)">🠔 بخش قبل</button>
+        <button id="cust-step-next-btn" type="button" class="btn-ghost-pill" onclick="stepCustomerFormTab(1)">بخش بعد ➔</button>
+      </div>
+      <div class="cust-footer-right">
+        <button type="button" class="btn-modern-ghost" onclick="closeCustomerFormWithConfirm()">انصراف</button>
+        <button id="cust-save-btn" type="button" class="btn btn-gold btn-modern-primary" onclick="saveCustomer()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>ذخیره شخص</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CUSTOMER STATEMENT (گردش حساب شخص) -->
+<div id="customer-statement-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeCustomerStatement()">
+  <div class="modal-box statement-modal-box">
+    
+    <!-- MODAL HEADER -->
+    <div class="modal-header" style="padding:10px 18px; border-bottom:1px solid var(--border); background:rgba(0,0,0,0.25); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="modal-title" id="cust-statement-title" style="font-size:14.5px; font-weight:800; color:var(--gold-bright); display:flex; align-items:center; gap:6px;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          گردش حساب شخص:
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <select id="cust-statement-select" onchange="openCustomerStatement(this.value)" style="height:28px; min-width:170px; max-width:260px; font-weight:700; font-size:12px; border-radius:6px; padding:1px 8px;">
+          </select>
+        </div>
+        <div id="cust-statement-badge-wrap" style="display:flex; align-items:center; gap:4px;"></div>
+        <div id="cust-statement-path" style="font-size:11px; color:var(--text-faint);"></div>
+      </div>
+
+      <div style="display:flex; gap:6px; align-items:center;">
+        <button class="btn btn-sm" style="padding:3px 12px; height:28px; font-size:11.5px; font-weight:700; display:flex; align-items:center; gap:4px; border-radius:6px;" onclick="printCustomerStatement()" title="چاپ صورت‌حساب رسمی شخص">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          <span>چاپ صورت‌حساب</span>
+        </button>
+        <button class="modal-close" style="font-size:16px; width:28px; height:28px; padding:0; display:flex; align-items:center; justify-content:center;" onclick="closeCustomerStatement()">✕</button>
+      </div>
+    </div>
+
+    <!-- CLEAN & FUNCTIONAL TOOLBAR -->
+    <div style="background:var(--elev); padding:6px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      
+      <!-- LEFT FILTERS -->
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <!-- OP FILTER -->
+        <div style="display:flex; align-items:center; gap:4px;">
+          <label for="cust-statement-op-filter" style="font-size:11px; font-weight:700; color:var(--text-dim); margin-bottom:0; white-space:nowrap;">عملیات:</label>
+          <select id="cust-statement-op-filter" onchange="renderCustomerStatementContent()" style="height:28px; font-size:11.5px; font-weight:700; border-radius:6px; width:150px; padding:1px 6px;">
+            <option value="all">✨ همه عملیات‌ها</option>
+            <option value="sales">🛍️ فاکتورهای فروش</option>
+            <option value="buys">🏷️ فاکتورهای خرید</option>
+            <option value="melted">🪙 معاملات آبشده</option>
+            <option value="returns">↩️ مرجوعی‌ها</option>
+            <option value="deposits">📥 دریافت وجه</option>
+            <option value="payments">📤 پرداخت وجه</option>
+            <option value="checks_in">🎫 چک‌های دریافتی</option>
+            <option value="checks_out">🎫 چک‌های پرداختی</option>
+            <option value="gold_in">⚖️ دریافت طلا</option>
+            <option value="gold_out">⚖️ تحویل طلا</option>
+            <option value="manual_journals">📝 اسناد دستی</option>
+            <option value="expenses_incomes">💸 هزینه‌ها/درآمد</option>
+          </select>
+        </div>
+
+        <!-- RANGE FILTER -->
+        <div style="display:flex; align-items:center; gap:4px;">
+          <label for="cust-statement-range" style="font-size:11px; font-weight:700; color:var(--text-dim); margin-bottom:0; white-space:nowrap;">بازه:</label>
+          <select id="cust-statement-range" onchange="onStatementRangeChange()" style="height:28px; font-size:11.5px; font-weight:600; border-radius:6px; width:105px; padding:1px 6px;">
+            <option value="all" selected>همه زمان‌ها</option>
+            <option value="today">امروز</option>
+            <option value="week">۷ روز اخیر</option>
+            <option value="month">۳۰ روز اخیر</option>
+            <option value="quarter">۳ ماه اخیر</option>
+            <option value="year">سال جاری</option>
+            <option value="custom">📅 دلخواه</option>
+          </select>
+        </div>
+
+        <!-- CUSTOM DATES (FROM / TO) -->
+        <div id="cust-statement-custom-dates" style="display:none; align-items:center; gap:4px;">
+          <input type="date" id="cust-statement-from" onchange="renderCustomerStatementContent()" style="height:28px; font-size:11px; padding:1px 4px; width:110px; border-radius:5px;" title="تاریخ شروع">
+          <span style="font-size:11px; color:var(--text-faint);">-</span>
+          <input type="date" id="cust-statement-to" onchange="renderCustomerStatementContent()" style="height:28px; font-size:11px; padding:1px 4px; width:110px; border-radius:5px;" title="تاریخ پایان">
+        </div>
+
+        <!-- VIEW MODE TABS: SUMMARY vs DETAILED ROWS -->
+        <div class="statement-view-mode-tabs" title="حالت نمایش: سرجمع فاکتورها یا نمایش ریز به ریز اقلام در سطرها">
+          <button type="button" id="btn-mode-summary" class="statement-view-tab active" onclick="setStatementViewMode('summary')" title="نمایش خلاصه سرجمع هر فاکتور در یک سطر">
+            📁 سرجمع
+          </button>
+          <button type="button" id="btn-mode-detailed" class="statement-view-tab" onclick="setStatementViewMode('detailed')" title="تبدیل سطرها به ریز اقلام کالا و جزئیات">
+            📄 ریز اقلام
+          </button>
+        </div>
+
+        <!-- GOLD COLUMNS TOGGLE -->
+        <button type="button" id="btn-statement-toggle-gold" class="statement-tool-btn" onclick="toggleStatementGoldColumns()" title="پنهان یا نمایان کردن ستون‌های گردش و مانده طلا">
+          <span id="statement-gold-toggle-icon">⚖️</span>
+          <span id="statement-gold-toggle-text">ستون طلا: روشن</span>
+        </button>
+      </div>
+
+      <!-- RIGHT ACTIONS & DOCUMENT TOOLS -->
+      <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+        <div id="cust-statement-selected-info" style="font-size:11px; color:var(--text-faint); margin-left:4px; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          <span>سندی انتخاب نشده</span>
+        </div>
+
+        <button id="btn-statement-edit-voucher" class="statement-tool-btn" onclick="editSelectedStatementDocument()" title="ویرایش سند یا فاکتور انتخاب‌شده">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <span>ویرایش سند</span>
+        </button>
+        
+        <button id="btn-statement-view-vouchers" class="statement-tool-btn" onclick="viewSelectedStatementDocInVouchers()" title="مشاهده در لیست اسناد روزنامه">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+          <span>در اسناد</span>
+        </button>
+
+        <button id="btn-statement-view-double" class="statement-tool-btn" onclick="viewSelectedStatementDoubleEntry()" title="مشاهده سند دوبل حسابداری">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <span>سند دوبل</span>
+        </button>
+
+        <button type="button" class="statement-tool-btn" onclick="resetCustomerStatementFilters()" style="color:var(--gold-bright);" title="بازنشانی فیلترها به حالت اولیه">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+          <span>بازنشانی</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- MODAL BODY -->
+    <div class="modal-body" style="padding:10px 16px; flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      
+      <!-- TRANSACTIONS TABLE CONTAINER -->
+      <div class="statement-table-container">
+        <div style="padding:6px 14px; background:var(--elev); border-bottom:1px solid var(--border); font-size:11.5px; font-weight:800; color:var(--text-bright); display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span>📋 ریز اسناد، فاکتورها و تراکنش‌های حساب</span>
+            <span style="font-size:10.5px; font-weight:normal; color:var(--text-faint);">(روی ردیف‌ها کلیک کنید تا انتخاب شوند یا دوبار کلیک برای ویرایش مستقیم)</span>
+          </div>
+          <span id="cust-statement-count" style="font-size:11px; color:var(--text-faint);"></span>
+        </div>
+        
+        <div class="statement-table-scroll">
+          <table style="width:100%; margin:0; border-collapse:collapse;">
+            <thead id="cust-statement-thead">
+              <tr style="background:var(--elev-2); font-size:11.5px; position:sticky; top:0; z-index:3;">
+                <th style="width:36px; text-align:center;">#</th>
+                <th style="width:85px; text-align:center;">تاریخ</th>
+                <th style="width:95px;">نوع رویداد</th>
+                <th style="width:48px; text-align:center;" title="شماره ثابت سیستم (غیرقابل تغییر 🔒)">ثابت</th>
+                <th style="width:58px; text-align:center;" title="شماره سند حسابداری">سند</th>
+                <th style="width:58px; text-align:center;" title="شماره فاکتور مرتبط">فاکتور</th>
+                <th>شرح و جزئیات تراکنش</th>
+                <th style="width:105px; text-align:left;">بدهکار ریال</th>
+                <th style="width:105px; text-align:left;">بستانکار ریال</th>
+                <th style="width:110px; text-align:left;">مانده ریال</th>
+                <th id="th-gold-turnover" class="statement-gold-col" style="width:90px; text-align:left;">گردش طلا (۱۸)</th>
+                <th id="th-gold-balance" class="statement-gold-col" style="width:95px; text-align:left;">مانده طلا (۱۸)</th>
+              </tr>
+            </thead>
+            <tbody id="cust-statement-tbody" style="font-size:12px;">
+              <!-- populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div id="cust-statement-empty" class="empty" style="display:none; padding:45px 10px; text-align:center;">
+          <div style="font-size:14px; font-weight:700; color:var(--text-dim); margin-bottom:4px;">هیچ گردش حسابی برای این شخص در بازه انتخابی ثبت نشده است.</div>
+          <div style="font-size:11.5px; color:var(--text-faint);">فیلترها را بازنشانی کرده یا فاکتور و سندی جدید برای این طرف‌حساب ثبت نمایید.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DEDICATED FIXED BOTTOM FOOTER: STANDALONE SUMMARY BAR (گردش و مانده کل ثابت در کف پنجره) -->
+    <div id="cust-statement-bottom-bar" class="statement-bottom-bar">
+      <!-- populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ITEM STATEMENT (گردش حساب و کاردکس کالا) -->
+<div id="item-statement-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeItemStatement()">
+  <div class="modal-box statement-modal-box">
+    
+    <!-- MODAL HEADER -->
+    <div class="modal-header" style="padding:10px 18px; border-bottom:1px solid var(--border); background:rgba(0,0,0,0.25); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="modal-title" id="item-statement-title" style="font-size:14.5px; font-weight:800; color:var(--gold-bright); display:flex; align-items:center; gap:6px;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 3 7l9 5 9-5-9-5z"/><path d="M3 7v10l9 5 9-5V7"/><path d="M12 12v10"/></svg>
+          گردش حساب و کاردکس کالا:
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <select id="item-statement-select" onchange="openItemStatement(this.value)" style="height:28px; min-width:180px; max-width:280px; font-weight:700; font-size:12px; border-radius:6px; padding:1px 8px;">
+          </select>
+        </div>
+        <div id="item-statement-badge-wrap" style="display:flex; align-items:center; gap:4px;"></div>
+        <div id="item-statement-path" style="font-size:11px; color:var(--text-faint);"></div>
+      </div>
+
+      <div style="display:flex; gap:6px; align-items:center;">
+        <button class="btn btn-sm" style="padding:3px 12px; height:28px; font-size:11.5px; font-weight:700; display:flex; align-items:center; gap:4px; border-radius:6px;" onclick="printItemStatement()" title="چاپ رسمی کاردکس و گردش کالا">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          <span>چاپ کاردکس</span>
+        </button>
+        <button class="modal-close" style="font-size:16px; width:28px; height:28px; padding:0; display:flex; align-items:center; justify-content:center;" onclick="closeItemStatement()">✕</button>
+      </div>
+    </div>
+
+    <!-- CLEAN & FUNCTIONAL TOOLBAR -->
+    <div style="background:var(--elev); padding:6px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      
+      <!-- LEFT FILTERS -->
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <!-- OP FILTER -->
+        <div style="display:flex; align-items:center; gap:4px;">
+          <label for="item-statement-op-filter" style="font-size:11px; font-weight:700; color:var(--text-dim); margin-bottom:0; white-space:nowrap;">عملیات:</label>
+          <select id="item-statement-op-filter" onchange="renderItemStatementContent()" style="height:28px; font-size:11.5px; font-weight:700; border-radius:6px; width:150px; padding:1px 6px;">
+            <option value="all">✨ همه عملیات‌ها</option>
+            <option value="sales">🛍️ فروش (صادره)</option>
+            <option value="buys">🏷️ خرید (وارده)</option>
+            <option value="exchanges">🔄 تعویض / کهنه</option>
+            <option value="returns">↩️ مرجوعی‌ها</option>
+            <option value="melted">🪙 معاملات آبشده</option>
+            <option value="manual">⚖️ اسناد دستی انبار</option>
+          </select>
+        </div>
+
+        <!-- RANGE FILTER -->
+        <div style="display:flex; align-items:center; gap:4px;">
+          <label for="item-statement-range" style="font-size:11px; font-weight:700; color:var(--text-dim); margin-bottom:0; white-space:nowrap;">بازه:</label>
+          <select id="item-statement-range" onchange="onItemStatementRangeChange()" style="height:28px; font-size:11.5px; font-weight:600; border-radius:6px; width:105px; padding:1px 6px;">
+            <option value="all" selected>همه زمان‌ها</option>
+            <option value="today">امروز</option>
+            <option value="week">۷ روز اخیر</option>
+            <option value="month">۳۰ روز اخیر</option>
+            <option value="quarter">۳ ماه اخیر</option>
+            <option value="year">سال جاری</option>
+            <option value="custom">📅 دلخواه</option>
+          </select>
+        </div>
+
+        <!-- CUSTOM DATES (FROM / TO) -->
+        <div id="item-statement-custom-dates" style="display:none; align-items:center; gap:4px;">
+          <input type="date" id="item-statement-from" onchange="renderItemStatementContent()" style="height:28px; font-size:11px; padding:1px 4px; width:110px; border-radius:5px;" title="تاریخ شروع">
+          <span style="font-size:11px; color:var(--text-faint);">-</span>
+          <input type="date" id="item-statement-to" onchange="renderItemStatementContent()" style="height:28px; font-size:11px; padding:1px 4px; width:110px; border-radius:5px;" title="تاریخ پایان">
+        </div>
+
+        <!-- TOGGLE MONETARY VALUES -->
+        <button type="button" id="btn-item-statement-toggle-values" class="statement-tool-btn" onclick="toggleItemStatementValues()" title="پنهان یا نمایان کردن ستون‌های نرخ و ارزش ریالی مبادله">
+          <span id="item-statement-values-icon">💰</span>
+          <span id="item-statement-values-text">ستون ارزش ریالی: روشن</span>
+        </button>
+      </div>
+
+      <!-- RIGHT ACTIONS & DOCUMENT TOOLS -->
+      <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+        <div id="item-statement-selected-info" style="font-size:11px; color:var(--text-faint); margin-left:4px; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          <span>سندی انتخاب نشده</span>
+        </div>
+
+        <button id="btn-item-statement-edit-voucher" class="statement-tool-btn" onclick="editSelectedItemStatementDocument()" title="ویرایش سند یا فاکتور انتخاب‌شده">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <span>ویرایش سند</span>
+        </button>
+        
+        <button id="btn-item-statement-view-vouchers" class="statement-tool-btn" onclick="viewSelectedItemStatementDocInVouchers()" title="مشاهده در لیست اسناد روزنامه">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+          <span>در اسناد</span>
+        </button>
+
+        <button id="btn-item-statement-view-double" class="statement-tool-btn" onclick="viewSelectedItemStatementDoubleEntry()" title="مشاهده سند دوبل حسابداری">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <span>سند دوبل</span>
+        </button>
+
+        <button type="button" class="statement-tool-btn" onclick="resetItemStatementFilters()" style="color:var(--gold-bright);" title="بازنشانی فیلترها به حالت اولیه">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+          <span>بازنشانی</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- MODAL BODY -->
+    <div class="modal-body" style="padding:10px 16px; flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      
+      <!-- TRANSACTIONS TABLE CONTAINER -->
+      <div class="statement-table-container">
+        <div style="padding:6px 14px; background:var(--elev); border-bottom:1px solid var(--border); font-size:11.5px; font-weight:800; color:var(--text-bright); display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span>📦 ریز کاردکس، اسناد، فاکتورها و گردش موجودی کالا</span>
+            <span style="font-size:10.5px; font-weight:normal; color:var(--text-faint);">(روی ردیف‌ها کلیک کنید تا انتخاب شوند یا دوبار کلیک برای ویرایش مستقیم)</span>
+          </div>
+          <span id="item-statement-count" style="font-size:11px; color:var(--text-faint);"></span>
+        </div>
+        
+        <div class="statement-table-scroll">
+          <table style="width:100%; margin:0; border-collapse:collapse;">
+            <thead id="item-statement-thead">
+              <tr style="background:var(--elev-2); font-size:11.5px; position:sticky; top:0; z-index:3;">
+                <th style="width:36px; text-align:center;">#</th>
+                <th style="width:85px; text-align:center;">تاریخ</th>
+                <th style="width:115px;">نوع رویداد</th>
+                <th style="width:120px;">طرف حساب / مشتری</th>
+                <th style="width:48px; text-align:center;" title="شماره ثابت سیستم (غیرقابل تغییر 🔒)">ثابت</th>
+                <th style="width:58px; text-align:center;" title="شماره سند حسابداری">سند</th>
+                <th style="width:58px; text-align:center;" title="شماره فاکتور مرتبط">فاکتور</th>
+                <th>شرح و مشخصات قلم</th>
+                <th style="width:95px; text-align:left; color:#10b981;">وارده (ورود)</th>
+                <th style="width:95px; text-align:left; color:#ef4444;">صادره (خروج)</th>
+                <th style="width:105px; text-align:left; color:var(--gold-bright);">مانده موجودی</th>
+                <th id="th-item-rate" class="item-statement-val-col" style="width:95px; text-align:left;">فی طلا (ریال)</th>
+                <th id="th-item-amount" class="item-statement-val-col" style="width:115px; text-align:left;">ارزش ریالی</th>
+              </tr>
+            </thead>
+            <tbody id="item-statement-tbody" style="font-size:12px;">
+              <!-- populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div id="item-statement-empty" class="empty" style="display:none; padding:45px 10px; text-align:center;">
+          <div style="font-size:14px; font-weight:700; color:var(--text-dim); margin-bottom:4px;">هیچ گردش حسابی برای این کالا در بازه انتخابی ثبت نشده است.</div>
+          <div style="font-size:11.5px; color:var(--text-faint);">فیلترها را بازنشانی کرده یا فاکتوری شامل این کالا در انبار ثبت نمایید.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DEDICATED FIXED BOTTOM FOOTER: STANDALONE SUMMARY BAR (گردش و موجودی کل ثابت در کف پنجره) -->
+    <div id="item-statement-bottom-bar" class="statement-bottom-bar">
+      <!-- populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CUSTOMER LEDGER INFO (اطلاعات دفتر و سرفصل حسابداری) -->
+<div id="customer-ledger-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeCustomerLedgerInfo()">
+  <div class="modal-box" style="max-width:780px; width:95vw; max-height:90vh; border-radius:14px; box-shadow:0 24px 60px rgba(0,0,0,0.75);">
+    <div class="modal-header" style="padding:16px 22px; border-bottom:1px solid var(--border);">
+      <div>
+        <div class="modal-title" style="font-size:16px; font-weight:800; color:var(--gold-bright);">📑 اطلاعات دفتر و جایگاه شخص در ساختار حساب‌ها</div>
+        <div style="font-size:11.5px; color:var(--text-faint); margin-top:2px;">مشخصات سرفصل کل، معین، دسته‌بندی و مانده‌های دفتر</div>
+      </div>
+      <button class="modal-close" style="font-size:18px;" onclick="closeCustomerLedgerInfo()">✕</button>
+    </div>
+
+    <div class="modal-body" style="padding:22px 24px; max-height:calc(90vh - 130px); overflow-y:auto; display:flex; flex-direction:column; gap:16px;" id="cust-ledger-modal-body">
+      <!-- populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT INVENTORY ITEM -->
+<div id="item-form-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeItemForm()">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-header">
+      <div class="modal-title" id="item-form-title">💍 ثبت کالای جدید در کاردکس</div>
+      <button class="modal-close" onclick="closeItemForm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- TOP BANNER WITH POSITION & ACCOUNT CODE -->
+      <div class="cust-form-path-banner" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px;">
+        <div style="display:flex; align-items:center; gap:6px; font-size:12px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gold); flex-shrink:0;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          <span style="color:var(--text-faint);">موقعیت در دفاتر:</span>
+          <span id="item-tree-position" style="color:var(--text); font-weight:600;">انبار و موجودی کالا</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label for="item-code" style="font-size:12px; font-weight:700; color:var(--gold-bright); margin-bottom:0; display:flex; align-items:center; gap:4px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="12" y2="12"></line></svg>
+            کد حساب:
+          </label>
+          <input id="item-code" class="cust-readonly-code" placeholder="2001" style="width:105px; height:32px; padding:2px 8px; text-align:center; font-size:12px; font-variant-numeric:tabular-nums; direction:ltr; border-radius:6px;" readonly title="کد حساب کالا به صورت خودکار توسط سیستم تخصیص می‌یابد">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>نام کالا *</label><input id="item-name" placeholder="مثلاً: النگو طرح بافت"></div>
+        <div class="field">
+          <label>عیار</label>
+          <select id="item-karat">
+            <option value="24">۲۴</option>
+            <option value="21">۲۱</option>
+            <option value="18" selected>۱۸</option>
+            <option value="14">۱۴</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>درصد اجرت (%)</label><input id="item-wage" type="number" step="0.1" placeholder="مثلاً 12"></div>
+        <div class="field"><label>بارکد</label><input id="item-barcode" placeholder="مثلاً A00001"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>دسته‌بندی در انبار (اختیاری)</label><select id="item-category"></select></div>
+        <div class="field">
+          <label>عکس کالا (اختیاری)</label>
+          <input id="item-photo-input" type="file" accept="image/*" onchange="onItemPhotoChange(event)">
+          <div style="margin-top:8px; display:flex; align-items:center; gap:10px;">
+            <img id="item-photo-preview" style="display:none; width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid var(--border);">
+            <span id="item-photo-clear" style="display:none;" class="unlink-link" onclick="clearItemPhoto()">حذف عکس</span>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="display:flex; align-items:center; margin-top:6px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:0; font-weight:600; color:var(--text);">
+          <input id="item-tax-exempt" type="checkbox" style="width:16px; height:16px; accent-color:var(--gold);">
+          معاف از مالیات <span style="color:var(--text-faint); font-weight:500;">(در غیر این صورت طبق ماده ۲۶، ۱۰٪ مالیات از اجرت و سود محاسبه می‌شود)</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer" style="padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+      <button id="item-modal-delete-btn" type="button" class="btn btn-sm" style="display:none; padding:7px 14px; font-size:12px; font-weight:700; color:var(--danger); border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08);" onclick="deleteItemFromModal()">🗑️ حذف این کالا</button>
+      <div style="display:flex; gap:10px; margin-right:auto;">
+        <button class="btn btn-sm" onclick="closeItemForm()">انصراف</button>
+        <button id="item-save-btn" class="btn btn-gold btn-sm" onclick="saveItem()">ذخیره کالا</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT ACCOUNT -->
+<div id="account-form-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeAccountForm()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="account-form-title">🏛️ تعریف حساب / صندوق جدید</div>
+      <button class="modal-close" onclick="closeAccountForm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- TOP BANNER WITH ACCOUNT CODE -->
+      <div class="cust-form-path-banner" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px;">
+        <div style="display:flex; align-items:center; gap:6px; font-size:12px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gold); flex-shrink:0;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          <span style="color:var(--text-faint);">سرفصل در دفاتر:</span>
+          <span style="color:var(--text); font-weight:600;">موجودی نقد و بانک</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label for="acc-code" style="font-size:12px; font-weight:700; color:var(--gold-bright); margin-bottom:0; display:flex; align-items:center; gap:4px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="7" y1="8" x2="17" y2="8"></line><line x1="7" y1="12" x2="12" y2="12"></line></svg>
+            کد حساب:
+          </label>
+          <input id="acc-code" class="cust-readonly-code" placeholder="101" style="width:105px; height:32px; padding:2px 8px; text-align:center; font-size:12px; font-variant-numeric:tabular-nums; direction:ltr; border-radius:6px;" readonly title="کد حساب به صورت خودکار توسط سیستم تخصیص می‌یابد">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>نوع حساب *</label>
+          <select id="acc-type" onchange="onAccountTypeChange()">
+            <option value="bank">بانک</option>
+            <option value="cash">صندوق</option>
+          </select>
+        </div>
+        <div class="field"><label>نام حساب *</label><input id="acc-name" placeholder="مثلاً: حساب جاری یا صندوق فروشگاه"></div>
+      </div>
+      <div class="field"><label>موجودی اولیه (ریال)</label><input id="acc-initial-balance" type="text" inputmode="numeric" placeholder="0" oninput="formatCurrencyInput(this)"></div>
+      <div class="row2" id="acc-bank-fields">
+        <div class="field"><label>نام بانک</label><input id="acc-bank-name" placeholder="مثلاً: بانک ملت"></div>
+        <div class="field"><label>شماره حساب / شماره کارت</label><input id="acc-number" placeholder="مثلاً: 6104-....-....-...."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" onclick="closeAccountForm()">انصراف</button>
+      <button id="acc-save-btn" class="btn btn-gold btn-sm" onclick="saveAccount()">ذخیره حساب</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT CHECK -->
+<div id="check-form-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeCheckForm()">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-header">
+      <div class="modal-title" id="check-form-title">📑 ثبت چک جدید</div>
+      <button class="modal-close" onclick="closeCheckForm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="row3">
+        <div class="field">
+          <label>شماره ثابت سیستم</label>
+          <input id="check-perm-id" readonly disabled style="background:rgba(255,255,255,0.03); color:var(--text-faint); font-weight:700;">
+        </div>
+        <div class="field">
+          <label>شماره سند حسابداری (قابل ویرایش) *</label>
+          <input id="check-doc-num" type="number" min="2" placeholder="مثلاً: ۲" style="font-weight:800; color:var(--gold-bright);">
+        </div>
+        <div class="field">
+          <label>نوع چک *</label>
+          <select id="check-type">
+            <option value="received">دریافتی (از شخص)</option>
+            <option value="issued">پرداختی (به شخص)</option>
+          </select>
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>شماره چک *</label><input id="check-number" placeholder="مثلاً: 123456"></div>
+        <div class="field"><label>نام بانک صادرکننده چک</label><input id="check-bank" placeholder="مثلاً: بانک صادرات"></div>
+        <div class="field"><label>تاریخ سررسید *</label><input id="check-due-date" type="date"></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>مبلغ (ریال) *</label><input id="check-amount" type="text" inputmode="numeric" placeholder="0" oninput="formatCurrencyInput(this)"></div>
+        <div class="field">
+          <label>شخص طرف حساب *</label>
+          <div style="display:flex; gap:6px;">
+            <input type="hidden" id="check-customer" value="">
+            <input id="check-customer-display" placeholder="نام شخص..." style="flex:1;">
+            <button type="button" class="btn btn-sm" onclick="openCustomerModal(document.getElementById('check-customer-display').value, 'check')">🔍</button>
+          </div>
+        </div>
+        <div class="field"><label>شماره صیاد / پیگیری</label><input id="check-note" placeholder="شماره صیاد یا پشت‌نویسی..."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" onclick="closeCheckForm()">انصراف</button>
+      <button id="check-save-btn" class="btn btn-gold btn-sm" onclick="saveCheck()">ذخیره چک</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT TRANSACTION -->
+<div id="txn-form-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeTxnForm()">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-header">
+      <div class="modal-title" id="txn-form-title">💳 ثبت تراکنش مالی (واریز / پرداخت)</div>
+      <button class="modal-close" onclick="closeTxnForm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="row3">
+        <div class="field">
+          <label>شماره ثابت سیستم</label>
+          <input id="txn-perm-id" readonly disabled style="background:rgba(255,255,255,0.03); color:var(--text-faint); font-weight:700;">
+        </div>
+        <div class="field">
+          <label>شماره سند حسابداری (قابل ویرایش) *</label>
+          <input id="txn-doc-num" type="number" min="2" placeholder="مثلاً: ۲" style="font-weight:800; color:var(--gold-bright);">
+        </div>
+        <div class="field"><label>تاریخ تراکنش *</label><input id="txn-date" type="date"></div>
+      </div>
+      <div class="row3">
+        <div class="field">
+          <label>نوع تراکنش *</label>
+          <select id="txn-kind" onchange="populateTxnAccountSelect()">
+            <option value="deposit">دریافت وجه (واریز به حساب ما / تسویه بدهی شخص)</option>
+            <option value="payment">پرداخت وجه (خروج از حساب ما / تسویه طلب شخص)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>روش *</label>
+          <select id="txn-method" onchange="populateTxnAccountSelect()">
+            <option value="bank">بانک</option>
+            <option value="cash">صندوق</option>
+            <option value="check">چک</option>
+          </select>
+        </div>
+        <div class="field">
+          <label id="txn-account-label">حساب *</label>
+          <select id="txn-account"></select>
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>مبلغ (ریال) *</label><input id="txn-amount" type="text" inputmode="numeric" placeholder="0" oninput="formatCurrencyInput(this)"></div>
+        <div class="field">
+          <label>شخص مرتبط (اختیاری)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="hidden" id="txn-customer" value="">
+            <input id="txn-customer-display" placeholder="نام شخص..." style="flex:1;">
+            <button type="button" class="btn btn-sm" onclick="openCustomerModal(document.getElementById('txn-customer-display').value, 'transaction')">🔍</button>
+          </div>
+        </div>
+        <div class="field"><label>شماره پیگیری یا شرح</label><input id="txn-note" placeholder="شماره پیگیری، بابت فاکتور یا شرح واریز..."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" onclick="closeTxnForm()">انصراف</button>
+      <button id="txn-save-btn" class="btn btn-gold btn-sm" onclick="saveTransaction()">ثبت تراکنش</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT EXPENSE & INCOME -->
+<div id="expense-income-modal-overlay" class="modal-overlay" style="display:none;" onmousedown="if(event.target===this) closeExpenseIncomeForm()">
+  <div class="modal-box" style="max-width:580px; width:94vw; max-height:90vh;">
+    <div class="modal-header">
+      <div class="modal-title" id="expinc-form-title">ثبت هزینه جدید</div>
+      <button class="modal-close" onclick="closeExpenseIncomeForm()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px 18px;">
+      <input type="hidden" id="expinc-perm-id">
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin-bottom:12px;">
+        <div class="field" style="margin:0;">
+          <label style="font-size:11.5px; color:var(--text-dim);">تاریخ سند *</label>
+          <input id="expinc-date" type="date" style="height:36px; font-size:12.5px;">
+        </div>
+        <div class="field" style="margin:0;">
+          <label style="font-size:11.5px; color:var(--text-dim);">شماره سند حسابداری *</label>
+          <input id="expinc-doc-num" type="number" min="2" placeholder="مثلاً: ۲" style="height:36px; font-weight:800; color:var(--gold-bright); font-size:13px;">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin-bottom:12px;">
+        <div class="field" style="margin:0;">
+          <label style="font-size:11.5px; color:var(--text-dim);">نوع عملیات *</label>
+          <select id="expinc-type" onchange="onExpenseIncomeTypeChange()" style="height:36px; font-size:12.5px;"></select>
+        </div>
+        <div class="field" style="margin:0;">
+          <label id="expinc-category-label" style="font-size:11.5px; color:var(--text-dim);">سرفصل حساب *</label>
+          <select id="expinc-category" style="height:36px; font-size:12.5px;"></select>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:10px 14px; margin-bottom:12px;">
+        <div class="field" style="margin:0;">
+          <label style="font-size:11.5px; color:var(--text-dim);">عنوان و شرح سند *</label>
+          <input id="expinc-title" placeholder="شرح سند..." style="height:36px; font-size:12.5px;">
+        </div>
+        <div class="field" style="margin:0;">
+          <label style="font-size:11.5px; color:var(--text-dim);">مبلغ (ریال) *</label>
+          <input id="expinc-amount" type="text" inputmode="numeric" placeholder="0" oninput="formatCurrencyInput(this)" style="height:36px; font-weight:700; font-size:13px;">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin-bottom:12px;">
+        <div class="field" style="margin:0;">
+          <label style="font-size:11.5px; color:var(--text-dim);">روش پرداخت / تسویه *</label>
+          <select id="expinc-payment-method" onchange="onExpenseIncomePaymentMethodChange()" style="height:36px; font-size:12.5px;">
+            <option value="bank">حساب بانکی (کارت‌خوان / حواله)</option>
+            <option value="cash">صندوق نقدی فروشگاه</option>
+            <option value="check">چک بانکی</option>
+            <option value="credit">نسیه / حساب شخص</option>
+          </select>
+        </div>
+        <div class="field" id="expinc-account-field" style="margin:0;">
+          <label id="expinc-account-label" style="font-size:11.5px; color:var(--text-dim);">حساب بانک یا صندوق</label>
+          <select id="expinc-account" style="height:36px; font-size:12.5px;"></select>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:10px 14px; margin-bottom:12px;">
+        <div class="field" style="margin:0;">
+          <label style="font-size:11.5px; color:var(--text-dim);">شخص طرف حساب (اختیاری)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="hidden" id="expinc-customer" value="">
+            <input id="expinc-customer-display" placeholder="انتخاب طرف حساب..." style="flex:1; height:36px; font-size:12px;">
+            <button type="button" class="btn btn-sm" onclick="openCustomerModal(document.getElementById('expinc-customer-display').value, 'expense')" style="height:36px; padding:0 10px;">🔍</button>
+          </div>
+        </div>
+        <div class="field" style="margin:0;">
+          <label style="font-size:11.5px; color:var(--text-dim);">شماره فیش / پیگیری / چک (اختیاری)</label>
+          <input id="expinc-tracking-code" placeholder="کد رهگیری یا شماره چک" style="height:36px; font-size:12.5px;">
+        </div>
+      </div>
+
+      <div class="field" style="margin:0;">
+        <label style="font-size:11.5px; color:var(--text-dim);">توضیحات و یادداشت تکمیلی (اختیاری)</label>
+        <input id="expinc-note" placeholder="شرح تفصیلی یا یادداشت سند..." style="height:36px; font-size:12.5px;">
+      </div>
+    </div>
+    <div class="modal-footer" style="padding:12px 18px;">
+      <button class="btn btn-sm" onclick="closeExpenseIncomeForm()">انصراف</button>
+      <button id="expinc-save-btn" class="btn btn-gold btn-sm" onclick="saveExpenseIncome()">ذخیره سند</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP CUSTOM PROMPT / INPUT MODAL -->
+<div id="app-prompt-modal" class="modal-overlay" style="display:none; z-index:1000001;" onmousedown="if(event.target===this) closePromptModal(null)">
+  <div class="modal-box" style="max-width:440px; width:92vw; border-radius:14px; border:1.5px solid var(--border); box-shadow:0 24px 60px rgba(0,0,0,0.85); background:var(--elev-2); padding:0; overflow:hidden;">
+    <div style="padding:18px 22px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); background:rgba(0,0,0,0.2);">
+      <div id="prompt-modal-icon" style="font-size:22px; line-height:1;">✏️</div>
+      <div id="prompt-modal-title" style="font-weight:800; font-size:15px; color:var(--text-bright);">ویرایش عنوان</div>
+    </div>
+    <div style="padding:20px 22px;">
+      <div id="prompt-modal-message" style="font-size:13px; margin-bottom:10px; color:var(--text); line-height:1.5;"></div>
+      <input id="prompt-modal-input" type="text" style="width:100%; height:42px; font-size:14px; font-weight:700;" onkeydown="if(event.key==='Enter') confirmPromptModal()">
+    </div>
+    <div style="padding:14px 22px; background:rgba(0,0,0,0.25); border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;">
+      <button type="button" class="btn btn-sm" style="padding:8px 18px; font-weight:700;" onclick="closePromptModal(null)">انصراف</button>
+      <button id="prompt-modal-ok-btn" type="button" class="btn btn-gold btn-sm" style="padding:8px 22px; font-weight:800;" onclick="confirmPromptModal()">ذخیره و تأیید</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP CUSTOM CONFIRM MODAL -->
+<div id="app-confirm-modal" class="modal-overlay" style="display:none; z-index:1000000;" onmousedown="if(event.target===this) closeConfirmModal(false)">
+  <div class="modal-box" style="max-width:440px; width:92vw; border-radius:14px; border:1.5px solid var(--border); box-shadow:0 24px 60px rgba(0,0,0,0.85); background:var(--elev-2); padding:0; overflow:hidden;">
+    <div style="padding:18px 22px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); background:rgba(0,0,0,0.2);">
+      <div id="confirm-modal-icon" style="font-size:24px; line-height:1;">⚠️</div>
+      <div id="confirm-modal-title" style="font-weight:800; font-size:15px; color:var(--text-bright);">تأیید عملیات</div>
+    </div>
+    <div style="padding:20px 22px;">
+      <div id="confirm-modal-message" style="font-size:13.5px; line-height:1.65; color:var(--text); white-space:pre-line;"></div>
+    </div>
+    <div style="padding:14px 22px; background:rgba(0,0,0,0.25); border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;">
+      <button id="confirm-modal-cancel-btn" type="button" class="btn btn-sm" style="padding:8px 18px; font-weight:700;" onclick="closeConfirmModal(false)">انصراف</button>
+      <button id="confirm-modal-ok-btn" type="button" class="btn btn-sm" style="padding:8px 20px; font-weight:800; background:#dc2626; color:#ffffff; border:none;" onclick="closeConfirmModal(true)">تأیید و حذف</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
